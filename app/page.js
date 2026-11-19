@@ -31,8 +31,8 @@ export default function Home() {
           <div>
             <span className="eyebrow">Tecnologia japonesa · desde 1967</span>
             <div className="hero-title" role="heading" aria-level={1}>
-              <BlurText text="Óleo limpo é" delay={110} stepDuration={0.4} direction="bottom" trigger="mount" />
-              <BlurText text="máquina produzindo." className="accent" delay={110} stepDuration={0.4} direction="bottom" trigger="mount" />
+              <BlurText text="Óleo limpo é" delay={110} stepDuration={0.4} direction="bottom" trigger="load" />
+              <BlurText text="máquina produzindo." className="accent" delay={110} stepDuration={0.4} direction="bottom" trigger="load" />
             </div>
             <p className="lead">
               Os purificadores Triple R removem partículas sólidas de até 1 mícron, água, borra e verniz em um único elemento. Menos paradas, óleo que dura até 5 vezes mais e até 80% menos custo de manutenção.
