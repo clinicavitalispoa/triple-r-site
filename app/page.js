@@ -1,16 +1,19 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import MachineHolo from '@/components/MachineHolo';
+import Machine3D from '@/components/Machine3D';
+import SectorCarousel from '@/components/SectorCarousel';
+import BlurText from '@/components/reactbits/BlurText/BlurText';
 import ProductCard from '@/components/ProductCard';
 import Reveal from '@/components/Reveal';
 import CountUp from '@/components/CountUp';
 import Faq from '@/components/Faq';
-import { SECTOR_SHORT, getModel, img, sectors, series, seriesCover, wa, waCatalog } from '@/lib/site';
+import { getModel, img, sectorItems, series, seriesCover, wa, waCatalog } from '@/lib/site';
 
 const CLIENTS = ['General-Motors', 'KLM-Royal-Dutch-Airlines', 'Hyundai', 'Mercedes-Benz', 'Coca-cola', 'AGFA', 'Ford', 'Rolls-Royce-1', 'Nissan', 'Esso', 'General-Electric', 'Usiminas', 'Biosev', 'Raizen', 'CSN'];
 
 const FEATURED = [
-  { slug: 'bu100e', image: '2023/08/BU100E-_-BU100EW.png' },
+  { slug: 'se100-st', image: '2023/08/SE100-ST.png' },
   { slug: 'trvs-30e', image: '2023/08/TRVS-30E.png' },
   { slug: 'al100', image: '2023/09/AL100_2.png' }
 ];
@@ -18,17 +21,19 @@ const FEATURED = [
 const HOME_SERIES = ['serie-bu', 'serie-se', 'serie-osca', 'desidratador-a-vacuo-termovacuo', 'serie-tr', 'elementos-filtrantes'];
 
 export default function Home() {
-  const hero = getModel('bu100e');
   return (
     <>
       <section className="hero">
+        <span className="hero-orb hero-orb--a" aria-hidden="true" />
+        <span className="hero-orb hero-orb--b" aria-hidden="true" />
         <div className="hero-r" aria-hidden="true" />
         <div className="container hero-grid">
           <div>
             <span className="eyebrow">Tecnologia japonesa · desde 1967</span>
-            <h1>
-              Óleo limpo é <em>máquina produzindo.</em>
-            </h1>
+            <div className="hero-title" role="heading" aria-level={1}>
+              <BlurText text="Óleo limpo é" delay={110} stepDuration={0.4} direction="bottom" trigger="mount" />
+              <BlurText text="máquina produzindo." className="accent" delay={110} stepDuration={0.4} direction="bottom" trigger="mount" />
+            </div>
             <p className="lead">
               Os purificadores Triple R removem partículas sólidas de até 1 mícron, água, borra e verniz em um único elemento. Menos paradas, óleo que dura até 5 vezes mais e até 80% menos custo de manutenção.
             </p>
@@ -41,14 +46,13 @@ export default function Home() {
               <a className="btn btn-clear" href={wa('Olá! Vim pelo site da Triple R e gostaria de um orçamento.')} target="_blank" rel="noopener">
                 Pedir orçamento
               </a>
-              <Link className="btn btn-ghost-light" href="/solucoes">
-                Ver soluções
+              <Link className="btn btn-ghost-light" href="/produto/bu100e">
+                Conhecer a BU100E
               </Link>
             </div>
           </div>
           <div className="hero-card">
-            <MachineHolo image={FEATURED[0].image} name={hero.name} label={hero.seriesTitle} width={340} />
-            <span className="hero-card__hint">Passe o mouse sobre o card</span>
+            <Machine3D height={560} />
           </div>
         </div>
       </section>
@@ -66,9 +70,11 @@ export default function Home() {
 
       <section className="section">
         <div className="container split">
-          <Reveal>
+          <Reveal variant="left">
             <span className="eyebrow">Quem somos</span>
-            <h2>Muito mais que filtragem: purificação.</h2>
+            <div className="split-heading h2" role="heading" aria-level={2}>
+              <BlurText text="Muito mais que filtragem: purificação." delay={90} direction="top" />
+            </div>
             <p className="lead">
               Com mais de 50 anos de mercado, a tecnologia Triple R estende a vida útil do óleo e reduz paradas de produção causadas por contaminação. É o parceiro ideal para metas de Manutenção Produtiva Total (TPM) e de sustentabilidade.
             </p>
@@ -77,8 +83,8 @@ export default function Home() {
               <Link className="btn btn-ghost" href="/beneficios">Ver benefícios</Link>
             </div>
           </Reveal>
-          <Reveal delay={120}>
-            <div className="media-frame">
+          <Reveal variant="right" delay={150}>
+            <div className="media-frame media-frame--glow float-y">
               <Image src={img('2023/09/Infografico.png')} alt="Infográfico do funcionamento do purificador Triple R" fill sizes="(max-width: 900px) 100vw, 560px" />
             </div>
           </Reveal>
@@ -153,20 +159,14 @@ export default function Home() {
         <div className="container" style={{ position: 'relative' }}>
           <div className="section-head">
             <span className="eyebrow">Setores</span>
-            <h2>Presente nas indústrias que não podem parar</h2>
-          </div>
-          <div className="sector-grid">
-            {sectors.map((s, i) => (
-              <Reveal key={s.slug} delay={(i % 3) * 80}>
-                <Link href={`/setores/${s.slug}`} className="sector">
-                  <h3>{SECTOR_SHORT[s.slug]}</h3>
-                  <p>{s.intro.length > 120 ? s.intro.slice(0, 117).trimEnd() + '…' : s.intro}</p>
-                  <span>Conheça →</span>
-                </Link>
-              </Reveal>
-            ))}
+            <div className="split-heading h2" role="heading" aria-level={2}>
+              <BlurText text="Presente nas indústrias que não podem parar" delay={70} direction="top" />
+            </div>
           </div>
         </div>
+        <Reveal variant="zoom">
+          <SectorCarousel items={sectorItems()} />
+        </Reveal>
       </section>
 
       <section className="section">

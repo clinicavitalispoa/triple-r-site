@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import MachineHolo from '@/components/MachineHolo';
+import Machine3D from '@/components/Machine3D';
 import ProductCard from '@/components/ProductCard';
-import { getModel, getSeries, models, seriesModels, waCatalog, waQuote } from '@/lib/site';
+import { MODELS_3D, getModel, getSeries, models, seriesModels, waCatalog, waQuote } from '@/lib/site';
 
 export function generateStaticParams() {
   return Object.keys(models).map(slug => ({ slug }));
@@ -28,8 +29,17 @@ export default async function Produto({ params }) {
           </nav>
           <div className="product-top">
             <div className="product-top__card">
-              <MachineHolo image={m.limg || m.img} name={m.name} label={s.title} width={380} />
-              <small>Passe o mouse ou arraste para girar</small>
+              {MODELS_3D[m.slug] ? (
+                <div style={{ position: 'relative', width: '100%' }}>
+                  <span className="badge-3d">3D</span>
+                  <Machine3D url={MODELS_3D[m.slug]} height={480} label={`Modelo 3D do ${m.name}`} />
+                </div>
+              ) : (
+                <>
+                  <MachineHolo image={m.limg || m.img} name={m.name} label={s.title} width={380} />
+                  <small>Passe o mouse ou arraste para girar</small>
+                </>
+              )}
             </div>
             <div>
               <span className="chip">{s.title}</span>

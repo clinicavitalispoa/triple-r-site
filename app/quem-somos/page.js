@@ -1,9 +1,20 @@
 import Image from 'next/image';
 import PageHero from '@/components/PageHero';
 import Reveal from '@/components/Reveal';
-import { img, wa } from '@/lib/site';
+import Timeline from '@/components/Timeline';
+import { img, proxied, wa } from '@/lib/site';
 
 export const metadata = { title: 'Quem Somos', description: 'Conheça a história da Triple R, da patente de 1967 à Triple R Mercosul.' };
+
+const YEAR_IMG = {
+  1967: '2023/10/1967-1.png',
+  1974: '2023/10/1974-scaled.jpg',
+  2004: '2023/10/2004.png',
+  2008: '2023/10/2008-scaled.jpg',
+  2009: '2023/10/2009.jpg',
+  2013: '2023/09/QuemSomos-2013.png',
+  2023: '2023/10/2023-1.jpg'
+};
 
 const HISTORY = [
   ['1967', 'O Sr. Russo, engenheiro da Ford Motor Co., inventa o primeiro purificador by-pass e registra a patente nos EUA. O objetivo era prolongar a vida útil do óleo do motor em até 100.000 km.'],
@@ -21,7 +32,7 @@ export default function QuemSomos() {
       <PageHero eyebrow="Quem somos" title="Conheça a Triple R" text="Produzimos sistemas de purificação de alta performance que resolvem problemas de contaminação de óleo. Tecnologia japonesa para otimizar a sua produção." crumbs={[{ label: 'Quem Somos' }]} />
       <section className="section">
         <div className="container split">
-          <Reveal>
+          <Reveal variant="left">
             <span className="eyebrow">Mais de 50 anos de tradição</span>
             <h2>Muito mais que filtragem: purificação</h2>
             <div className="prose">
@@ -29,27 +40,20 @@ export default function QuemSomos() {
               <p>Desde então, o desenvolvimento de soluções é a nossa maior prioridade. Atualizamos continuamente os produtos para entregar óleo com a mais alta qualidade e atender às indústrias em constante mudança. Hoje, os sistemas Triple R são parte fundamental da proteção das máquinas.</p>
             </div>
           </Reveal>
-          <Reveal delay={120}>
-            <div className="media-frame">
+          <Reveal delay={120} variant="right">
+            <div className="media-frame media-frame--glow float-y">
               <Image src={img('2023/07/Packshot-Serie-Al100-e-Ws-1024x1024.png')} alt="Purificadores Triple R AL100 e WS" fill sizes="(max-width: 900px) 100vw, 560px" />
             </div>
           </Reveal>
         </div>
       </section>
       <section className="section section--soft">
-        <div className="container" style={{ maxWidth: 900 }}>
-          <div className="section-head">
+        <div className="container" style={{ maxWidth: 1040 }}>
+          <div className="section-head center">
             <span className="eyebrow">Jornada de sucesso</span>
             <h2>Nossa história</h2>
           </div>
-          <div className="timeline">
-            {HISTORY.map(([y, t], i) => (
-              <Reveal className="tl-item" key={y} delay={i * 40}>
-                <span className="tl-year">{y}</span>
-                <p>{t}</p>
-              </Reveal>
-            ))}
-          </div>
+          <Timeline items={HISTORY.map(([year, text]) => ({ year, text, image: proxied(YEAR_IMG[year], 750) }))} />
         </div>
       </section>
       <section className="section section--dark">

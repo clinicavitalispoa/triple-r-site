@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
 import PageHero from '@/components/PageHero';
 import ProductCard from '@/components/ProductCard';
-import { SECTOR_SHORT, getModel, getSector, getSeries, sectors, seriesCover, wa } from '@/lib/site';
+import Image from 'next/image';
+import Reveal from '@/components/Reveal';
+import { SECTOR_IMG, SECTOR_SHORT, getModel, getSector, getSeries, img, sectors, seriesCover, wa } from '@/lib/site';
 
 export function generateStaticParams() {
   return sectors.map(s => ({ slug: s.slug }));
@@ -23,14 +25,19 @@ export default async function Setor({ params }) {
         </div>
       </PageHero>
       <section className="section">
-        <div className="container split split--top">
-          <div>
+        <div className="container split">
+          <Reveal variant="left">
             <span className="eyebrow">{SECTOR_SHORT[s.slug]}</span>
             <h2>{s.sub}</h2>
-          </div>
-          <div className="prose">
-            <p>{s.body}</p>
-          </div>
+            <div className="prose">
+              <p>{s.body}</p>
+            </div>
+          </Reveal>
+          <Reveal variant="right" delay={120}>
+            <div className="media-frame media-frame--glow" style={{ aspectRatio: '4 / 5' }}>
+              <Image src={img(SECTOR_IMG[s.slug])} alt={SECTOR_SHORT[s.slug]} fill sizes="(max-width: 900px) 100vw, 560px" style={{ objectFit: 'cover' }} />
+            </div>
+          </Reveal>
         </div>
       </section>
       {s.recs.length ? (

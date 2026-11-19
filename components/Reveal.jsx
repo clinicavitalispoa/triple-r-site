@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-export default function Reveal({ children, delay = 0, as: Tag = 'div', className = '', style, ...rest }) {
+export default function Reveal({ children, delay = 0, as: Tag = 'div', className = '', variant, style, ...rest }) {
   const ref = useRef(null);
   const [shown, setShown] = useState(false);
   useEffect(() => {
@@ -21,7 +21,7 @@ export default function Reveal({ children, delay = 0, as: Tag = 'div', className
     return () => io.disconnect();
   }, []);
   return (
-    <Tag ref={ref} className={`reveal${shown ? ' is-in' : ''} ${className}`} style={{ transitionDelay: `${delay}ms`, ...style }} {...rest}>
+    <Tag ref={ref} className={`reveal${variant ? ` reveal--${variant}` : ''}${shown ? ' is-in' : ''} ${className}`} style={{ transitionDelay: `${delay}ms`, ...style }} {...rest}>
       {children}
     </Tag>
   );
