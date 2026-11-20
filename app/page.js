@@ -3,6 +3,7 @@ import Link from 'next/link';
 import MachineHolo from '@/components/MachineHolo';
 import Machine3D from '@/components/Machine3D';
 import SectorCarousel from '@/components/SectorCarousel';
+import FlowSlider from '@/components/FlowSlider';
 import BlurText from '@/components/reactbits/BlurText/BlurText';
 import ProductCard from '@/components/ProductCard';
 import Reveal from '@/components/Reveal';
@@ -67,6 +68,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <FlowSlider />
 
       <section className="section">
         <div className="container split">
