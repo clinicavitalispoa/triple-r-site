@@ -3,22 +3,18 @@ import AnimatedWords from '@/components/AnimatedWords';
 import { CatalogButton } from '@/components/Catalog';
 import CountUp from '@/components/CountUp';
 import Faq from '@/components/Faq';
+import HeroVideo from '@/components/HeroVideo';
 import Machine3D from '@/components/Machine3D';
-import MachineHolo from '@/components/MachineHolo';
 import ProductCard from '@/components/ProductCard';
 import Reveal from '@/components/Reveal';
 import SectorCarousel from '@/components/SectorCarousel';
 import { SERIES_META } from '@/lib/catalog';
 import { HOME_SECTORS } from '@/lib/sectors';
-import { getModel, img, productHref, quoteHref, sectorItems, series, seriesCover } from '@/lib/site';
+import { getModel, img, model3d, productHref, quoteHref, sectorItems, series, seriesCover } from '@/lib/site';
 
 const CLIENTS = ['General-Motors', 'KLM-Royal-Dutch-Airlines', 'Hyundai', 'Mercedes-Benz', 'Coca-cola', 'AGFA', 'Ford', 'Rolls-Royce-1', 'Nissan', 'Esso', 'General-Electric', 'Usiminas', 'Biosev', 'Raizen', 'CSN'];
 
-const FEATURED = [
-  { slug: 'se100-st', image: '2023/08/SE100-ST.png' },
-  { slug: 'trvs-30e', image: '2023/08/TRVS-30E.png' },
-  { slug: 'al100', image: '2023/09/AL100_2.png' }
-];
+const FEATURED = ['bu100e', 'se100-st', 'al100'];
 
 const HOME_SERIES = ['serie-bu', 'serie-se', 'serie-osca', 'desidratador-a-vacuo-termovacuo', 'serie-tr', 'elementos-filtrantes'];
 
@@ -31,10 +27,9 @@ const TESTIMONIALS = [
 export default function Home() {
   return (
     <>
-      <section className="hero">
-        <span className="hero-orb hero-orb--a" aria-hidden="true" />
-        <span className="hero-orb hero-orb--b" aria-hidden="true" />
-        <div className="hero-r" aria-hidden="true" />
+      <section className="hero hero--video">
+        <HeroVideo />
+        <div className="hero-shade" aria-hidden="true" />
         <div className="container hero-grid">
           <div>
             <span className="eyebrow">Patente desde 1967 · fabricação japonesa</span>
@@ -52,9 +47,6 @@ export default function Home() {
               <Link className="btn btn-clear" href={quoteHref()}>Pedir orçamento</Link>
               <CatalogButton className="btn btn-ghost-light" />
             </div>
-          </div>
-          <div className="hero-card">
-            <Machine3D height={560} />
           </div>
         </div>
       </section>
@@ -127,19 +119,22 @@ export default function Home() {
             <span className="eyebrow">Destaques</span>
             <h2>Equipamentos em destaque</h2>
           </div>
-          <div className="holo-row">
-            {FEATURED.map((f, i) => {
-              const m = getModel(f.slug);
+          <div className="featured3d">
+            {FEATURED.map((slug, i) => {
+              const m = getModel(slug);
               return (
-                <Reveal as="figure" key={f.slug} delay={i * 100}>
-                  <MachineHolo image={f.image} name={m.name} label={m.seriesTitle} width={280} preset={['rainbow', 'shards', 'glitter'][i]} />
+                <Reveal as="figure" key={slug} delay={i * 100} className="featured3d__item">
+                  <Machine3D url={model3d(slug)} photo={m.limg || m.img} height={360} hint={null} label={`Modelo 3D do ${m.name}`} />
                   <figcaption>
-                    <Link href={productHref(f.slug)} style={{ color: 'var(--clear)' }}>Ver {m.name} →</Link>
+                    <span className="kicker">{m.seriesTitle}</span>
+                    <b>{m.name}</b>
+                    <Link href={productHref(slug)}>Ver especificações →</Link>
                   </figcaption>
                 </Reveal>
               );
             })}
           </div>
+          <p className="note" style={{ textAlign: 'center', marginTop: 18 }}>Arraste para girar os modelos 3D.</p>
         </div>
       </section>
 

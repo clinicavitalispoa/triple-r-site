@@ -21,7 +21,7 @@ export default async function Setor({ params }) {
   return (
     <>
       <PageHero eyebrow={s.nome} title={s.chamada} crumbs={[{ label: 'Setores', href: '/setores' }, { label: s.nome }]} />
-      {STORIES[s.slug] ? <SectorStory story={STORIES[s.slug]} image={proxied(STORIES[s.slug].image, 1920)} /> : null}
+      {STORIES[s.slug] ? <SectorStory story={STORIES[s.slug]} images={STORIES[s.slug].scenes.map(sc => proxied(sc.image, 1920))} /> : null}
       <section className="section">
         <div className="container">
           {STORIES[s.slug] ? null : (

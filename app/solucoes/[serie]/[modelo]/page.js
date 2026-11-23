@@ -5,7 +5,7 @@ import Machine3D from '@/components/Machine3D';
 import MachineHolo from '@/components/MachineHolo';
 import ProductCard from '@/components/ProductCard';
 import { SERIES_META } from '@/lib/catalog';
-import { MODELS_3D, fichaPdf, getModel, getSeries, models, productHref, quoteHref, seriesModels } from '@/lib/site';
+import { fichaPdf, model3d, getModel, getSeries, models, productHref, quoteHref, seriesModels } from '@/lib/site';
 
 export function generateStaticParams() {
   return Object.entries(models).map(([modelo, m]) => ({ serie: m.series, modelo }));
@@ -38,10 +38,10 @@ export default async function Produto({ params }) {
           </nav>
           <div className="product-top">
             <div className="product-top__card">
-              {MODELS_3D[m.slug] ? (
+              {model3d(m.slug) ? (
                 <div style={{ position: 'relative', width: '100%' }}>
                   <span className="badge-3d">3D</span>
-                  <Machine3D url={MODELS_3D[m.slug]} height={480} label={`Modelo 3D do ${m.name}`} />
+                  <Machine3D url={model3d(m.slug)} photo={m.limg || m.img} height={480} label={`Modelo 3D do ${m.name}`} />
                 </div>
               ) : (
                 <>
