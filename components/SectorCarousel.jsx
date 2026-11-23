@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 // Coverflow carousel with a lenticular sheen: cards rotate in 3D as they move away from the
 // centre, and a striped holographic layer shifts with each card's angle.
-export default function SectorCarousel({ items, autoplay = 4500 }) {
+export default function SectorCarousel({ items, autoplay = 4500, onActiveChange, selectOnly = false }) {
   const trackRef = useRef(null);
   const [active, setActive] = useState(0);
   const pausedRef = useRef(false);
@@ -29,6 +29,10 @@ export default function SectorCarousel({ items, autoplay = 4500 }) {
     });
     setActive(best);
   }, []);
+
+  useEffect(() => {
+    onActiveChange?.(active);
+  }, [active, onActiveChange]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -115,7 +119,21 @@ export default function SectorCarousel({ items, autoplay = 4500 }) {
     >
       <div className="lenti__track" ref={trackRef}>
         {items.map((it, i) => (
-          <Link key={it.href} href={it.href} className={`lenti__card${i === active ? ' is-active' : ''}`} draggable={false}>
+          <Link
+            key={it.href}
+            href={it.href}
+            className={`lenti__card${i === active ? ' is-active' : ''}`}
+            draggable={false}
+            onClick={
+              selectOnly
+                ? e => {
+                    e.preventDefault();
+                    go(i);
+                  }
+                : undefined
+            }
+            aria-current={selectOnly && i === active ? 'true' : undefined}
+          >
             <span className="lenti__img" style={{ backgroundImage: `url(${it.image})` }} />
             <span className="lenti__sheen" aria-hidden="true" />
             <span className="lenti__shade" aria-hidden="true" />
@@ -123,7 +141,7 @@ export default function SectorCarousel({ items, autoplay = 4500 }) {
               <span className="lenti__num">{String(i + 1).padStart(2, '0')}</span>
               <b>{it.title}</b>
               <span className="lenti__text">{it.text}</span>
-              <span className="lenti__cta">Conheça →</span>
+              <span className="lenti__cta">{selectOnly ? (i === active ? 'Veja os detalhes abaixo ↓' : 'Selecionar') : 'Conheça →'}</span>
             </span>
           </Link>
         ))}
