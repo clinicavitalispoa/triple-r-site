@@ -441,6 +441,296 @@ function magBox({ name, w = 16, d = 16, h = 3.6, slots = false }) {
   return root;
 }
 
+// ---------- complex machines (stylized) ----------
+const C = (name, color, metal = 0.2, rough = 0.5) => M(name, color, metal, rough);
+const box = (add, w, h, d, material, pos, rot) => add(new THREE.BoxGeometry(w, h, d), material, pos, rot);
+const face = (add, w, h, key, pos, rot = [0, 0, 0], rough = 0.5) => add(new THREE.PlaneGeometry(w, h), mat.tex(key, rough), pos, rot);
+const pipe = (add, pts, r = 0.6, material = mat.chrome()) => {
+  const curve = new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(...p)), false, 'catmullrom', 0.05);
+  return add(new THREE.TubeGeometry(curve, 48, r, 12, false), material);
+};
+function caster(add, x, z, y = 0, r = 2) {
+  box(add, 2.6, 0.4, 2.6, mat.chrome(), [x, y + r * 2 + 1.2, z]);
+  box(add, 0.4, 1.6, 2, mat.dark(), [x - 0.9, y + r * 2 + 0.2, z]);
+  box(add, 0.4, 1.6, 2, mat.dark(), [x + 0.9, y + r * 2 + 0.2, z]);
+  add(new THREE.CylinderGeometry(r, r, 1.4, 24), mat.dark(), [x, y + r, z], [0, 0, Math.PI / 2]);
+}
+function vessel(add, { R, H, y0 = 0, x = 0, z = 0, material, dome = true, flange = 0.7, bolts = 10, cone = false }) {
+  const pts = cone ? [[1.5, y0 - R * 0.5], [R, y0]] : [[0, y0], [R * 0.9, y0], [R, y0 + 0.8]];
+  pts.push([R, y0 + H * flange], [R + 0.7, y0 + H * flange], [R + 0.7, y0 + H * flange + 1.6], [R, y0 + H * flange + 1.6], [R, y0 + H]);
+  if (dome) pts.push([R * 0.8, y0 + H + R * 0.25], [R * 0.35, y0 + H + R * 0.38], [0, y0 + H + R * 0.4]);
+  else pts.push([0, y0 + H]);
+  const g = new THREE.LatheGeometry(pts.map(([a, b]) => new THREE.Vector2(a, b)), 72);
+  add(g, material, [x, 0, z]);
+  for (let i = 0; i < bolts; i++) {
+    const a = (i / bolts) * Math.PI * 2;
+    add(new THREE.CylinderGeometry(0.38, 0.38, 2.2, 6), mat.chrome(), [x + Math.sin(a) * (R + 1), y0 + H * flange + 0.8, z + Math.cos(a) * (R + 1)]);
+  }
+}
+const bronze = () => M('bronze-paint', '#b9a789', 0.55, 0.35);
+
+TEX.panel = () => {
+  const btn = [];
+  const cols = ['#d92d20', '#16a34a', '#d92d20', '#16a34a'];
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) btn.push(`<circle cx="${110 + c * 95}" cy="${200 + r * 80}" r="24" fill="${cols[(r + c) % 4]}" stroke="#333" stroke-width="4"/>`);
+  return svgImg(`<svg xmlns="http://www.w3.org/2000/svg" width="512" height="560"><rect width="512" height="560" fill="#efeee6"/><rect x="40" y="30" width="432" height="110" rx="8" fill="#e3e2d8" stroke="#bbb" stroke-width="3"/><polygon points="90,120 120,60 150,120" fill="#f5c518" stroke="#222" stroke-width="4"/><text x="200" y="100" font-family="DejaVu Sans" font-size="34" fill="#555">TRIPLE R</text>${btn.join('')}<rect x="200" y="500" width="110" height="36" fill="#222"/></svg>`, 512, 560);
+};
+TEX.grille = () => {
+  const holes = [];
+  for (let y = 10; y < 512; y += 16) for (let x = (y / 16) % 2 ? 8 : 16; x < 512; x += 16) holes.push(`<circle cx="${x}" cy="${y}" r="5" fill="#b9b7aa"/>`);
+  return svgImg(`<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512"><rect width="512" height="512" fill="#ecebe1"/>${holes.join('')}</svg>`, 512, 512);
+};
+TEX.screen = () => svgImg(`<svg xmlns="http://www.w3.org/2000/svg" width="512" height="400"><rect width="512" height="400" fill="#d6dade"/><rect x="120" y="60" width="270" height="170" rx="8" fill="#0f2740"/><rect x="140" y="80" width="230" height="22" fill="#3ec1f3"/><rect x="140" y="115" width="150" height="14" fill="#6fd4ff"/><rect x="140" y="140" width="190" height="14" fill="#6fd4ff"/><circle cx="256" cy="320" r="30" fill="#d92d20" stroke="#333" stroke-width="5"/></svg>`, 512, 400);
+
+function ssHousing({ name }) {
+  const { root, add } = scene(name);
+  vessel(add, { R: 10, H: 40, y0: 14, material: bronze(), flange: 0.86, bolts: 12 });
+  const lbl = new THREE.PlaneGeometry(9, 7, 16, 1);
+  lbl.translate(0, 0, 0.08);
+  add(wrap(lbl, 10.02, 46), mat.tex('label', 0.5));
+  for (let i = 0; i < 3; i++) {
+    const a = (i / 3) * Math.PI * 2 + 0.5;
+    const x = Math.sin(a) * 9.4, z = Math.cos(a) * 9.4;
+    box(add, 1.4, 30, 3.2, bronze(), [x, 15, z], [0, a, 0]);
+    box(add, 4, 0.6, 4, bronze(), [x * 1.05, 0.3, z * 1.05]);
+  }
+  add(new THREE.CylinderGeometry(1, 1, 8, 16), mat.chrome(), [0, 10, 0]);
+  add(new THREE.CylinderGeometry(0.9, 0.9, 6, 16), mat.chrome(), [11.5, 20, 0], [0, 0, Math.PI / 2]);
+  return root;
+}
+
+function oscaAl({ name }) {
+  const { root, add } = scene(name);
+  const navy = C('navy-frame', '#1f2f7a', 0.35, 0.45);
+  box(add, 46, 2, 26, navy, [0, 1, 0]);
+  box(add, 46, 2, 26, navy, [0, 25, 0]);
+  for (const [x, z] of [[-22, -12], [22, -12], [-22, 12], [22, 12]]) box(add, 2, 24, 2, navy, [x, 13, z]);
+  box(add, 44, 18, 0.4, C('navy-panel', '#2a3c8f', 0.3, 0.5), [0, 15, -12]);
+  for (const x of [-15, 0, 15]) for (const z of [-6, 6]) {
+    add(lathe([[0, 26], [5.2, 26], [5.4, 27], [5.4, 32], [5.8, 32.3]], 48), mat.alu(), [x, 0, z]);
+    add(lathe([[0, 32.3], [6, 32.3], [6.2, 33.2], [2, 35], [0, 35.2]], 48), mat.alu(), [x, 0, z]);
+    add(new THREE.CylinderGeometry(0.7, 0.7, 2, 12), mat.chrome(), [x, 36, z]);
+  }
+  root.add(gauge(add, -16, 20, 12.2, 2.6));
+  root.add(gauge(add, -9, 20, 12.2, 2.6));
+  face(add, 6, 4, 'label', [0, 17, 12.25]);
+  pipe(add, [[-20, 6, 13], [-10, 6, 14], [10, 6, 14], [20, 6, 13]], 0.9, mat.brass());
+  add(new THREE.CylinderGeometry(3, 3, 10, 24), mat.dark(), [14, 9, 4], [0, 0, Math.PI / 2]);
+  return root;
+}
+
+function oscaCart({ name }) {
+  const { root, add } = scene(name);
+  const blue = C('cart-blue', '#2a8fd6', 0.3, 0.45);
+  // hand-truck frame
+  pipe(add, [[-6, 4, -4], [-6, 30, -6], [-6, 42, -8]], 0.8, blue);
+  pipe(add, [[6, 4, -4], [6, 30, -6], [6, 42, -8]], 0.8, blue);
+  pipe(add, [[-6, 42, -8], [0, 43, -8.5], [6, 42, -8]], 0.8, blue);
+  box(add, 16, 1, 14, blue, [0, 4, 1]);
+  const tri = new THREE.Shape();
+  tri.moveTo(0, 0);
+  tri.lineTo(12, 0);
+  tri.lineTo(0, 18);
+  const tg = new THREE.ExtrudeGeometry(tri, { depth: 1, bevelEnabled: false });
+  add(tg, blue, [6, 4, 8], [0, -Math.PI / 2, 0]);
+  for (const x of [-8, 8]) {
+    add(new THREE.CylinderGeometry(4, 4, 2.2, 32), mat.dark(), [x, 4, -4], [0, 0, Math.PI / 2]);
+    add(new THREE.CylinderGeometry(2.4, 2.4, 2.4, 24), C('green-hub', '#2f6b3a', 0.3, 0.5), [x, 4, -4], [0, 0, Math.PI / 2]);
+  }
+  vessel(add, { R: 5.5, H: 22, y0: 12, x: 1, z: 2, material: bronze(), flange: 0.78, bolts: 8 });
+  box(add, 4, 6, 4, C('motor-grey', '#6b7480', 0.4, 0.4), [-4, 24, 6]);
+  add(new THREE.TorusGeometry(6, 0.6, 10, 40), mat.dark(), [8, 26, -2], [0, Math.PI / 2, 0]);
+  add(new THREE.TorusGeometry(5, 0.6, 10, 40), mat.dark(), [8.6, 26, -2], [0, Math.PI / 2, 0]);
+  return root;
+}
+
+function oscaTallOnBase({ name, bodyMat, cart = false }) {
+  const { root, add } = scene(name);
+  box(add, 34, 1.4, 24, mat.brushed(), [0, cart ? 6 : 1, 0]);
+  if (cart) for (const [x, z] of [[-14, -9], [14, -9], [-14, 9], [14, 9]]) caster(add, x, z, 0, 1.8);
+  const y = cart ? 7 : 2;
+  vessel(add, { R: 6.5, H: 30, y0: y + 14, x: -6, z: 0, material: bodyMat, flange: 0.85, bolts: 10 });
+  const lbl = new THREE.PlaneGeometry(6, 4.5, 12, 1);
+  lbl.translate(0, 0, 0.06);
+  add(wrap(lbl, 6.52, y + 38), mat.tex('label', 0.5), [-6, 0, 0]);
+  box(add, 9, 12, 9, mat.brushed(), [-6, y + 7, 0]);
+  add(new THREE.CylinderGeometry(3.4, 3.4, 10, 28), C('motor', '#4a5560', 0.4, 0.45), [6, y + 5, -2], [0, 0, Math.PI / 2]);
+  add(new THREE.CylinderGeometry(3, 3, 11, 28), C('blue-filter', '#1f5fbf', 0.3, 0.4), [9, y + 12, 6]);
+  box(add, 5, 7, 4, mat.motor(), [10, y + 12, -6]);
+  root.add(gauge(add, -6, y + 49, 0, 2.2));
+  pipe(add, [[-6, y + 3, 6], [2, y + 3, 7], [9, y + 6.5, 6]], 0.7);
+  pipe(add, [[0, y + 30, 0], [6, y + 26, 3], [9, y + 17.5, 6]], 0.6);
+  return root;
+}
+
+function oscaOs({ name }) {
+  const { root, add } = scene(name);
+  const white = C('white-frame', '#f1f2ee', 0.15, 0.5);
+  for (const [x, z] of [[-12, -8], [12, -8], [-12, 8], [12, 8]]) box(add, 1.6, 40, 1.6, white, [x, 20, z]);
+  for (const y of [2, 22, 40]) box(add, 26, 1.2, 18, white, [0, y, 0]);
+  box(add, 26, 16, 0.6, white, [0, 31, 8.6]);
+  for (const x of [-5, 1, 7]) root.add(gauge(add, x - 1, 34, 8.8, 2.2));
+  face(add, 4, 3, 'label', [-7, 28, 8.95]);
+  for (const x of [-4, 4]) vessel(add, { R: 4, H: 9, y0: 41, x, z: -2, material: C('white-vessel', '#e9ebe6', 0.2, 0.4), flange: 0.8, bolts: 8 });
+  add(new THREE.CylinderGeometry(3, 3, 9, 24), C('pump-green', '#356b4f', 0.4, 0.45), [3, 7.5, 0], [0, 0, Math.PI / 2]);
+  pipe(add, [[-8, 4, 6], [-8, 15, 6], [-3, 21, 4]], 0.7);
+  return root;
+}
+
+function trcs({ name }) {
+  const { root, add } = scene(name);
+  const mint = C('mint-paint', '#9fd8c6', 0.25, 0.45);
+  box(add, 44, 4, 26, mint, [0, 2, 0]);
+  vessel(add, { R: 7.5, H: 26, y0: 4, x: -12, z: 0, material: mint, flange: 0.7, bolts: 10 });
+  vessel(add, { R: 5, H: 20, y0: 4, x: 1, z: 4, material: mint, flange: 0.75, bolts: 8 });
+  box(add, 10, 40, 9, C('panel-grey', '#d9dbd8', 0.2, 0.5), [16, 24, -4]);
+  face(add, 8.6, 9, 'screen', [16, 34, 0.55]);
+  box(add, 14, 10, 12, mint, [4, 9, -6]);
+  pipe(add, [[-20, 8, 8], [-4, 8, 10], [6, 8, 10], [12, 8, 8]], 0.9, mint);
+  for (const x of [-16, -8]) {
+    add(new THREE.CylinderGeometry(1.2, 1.2, 2.4, 16), C('valve-red', '#c4352c', 0.3, 0.4), [x, 10, 10]);
+  }
+  return root;
+}
+
+function bf20({ name }) {
+  const { root, add } = scene(name);
+  const copper = C('dark-bronze', '#6b4a3a', 0.6, 0.35);
+  add(lathe([[0, 8], [12, 8], [12.6, 9], [12.6, 11], [11.5, 11.6], [11.5, 21], [12.6, 21.4], [12.6, 23.4], [9, 26], [3, 28], [0, 28.2]]), copper);
+  for (const y of [10, 22.4]) for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    add(new THREE.CylinderGeometry(0.5, 0.5, 2.6, 6), mat.chrome(), [Math.sin(a) * 12.2, y, Math.cos(a) * 12.2]);
+  }
+  add(new THREE.CylinderGeometry(1.2, 1.6, 4, 16), mat.chrome(), [0, 30, 0]);
+  add(new THREE.CylinderGeometry(1, 1, 2, 16), mat.red(), [0, 33, 0]);
+  add(new THREE.ConeGeometry(1, 2.4, 16), mat.chrome(), [0, 35, 0]);
+  for (const sx of [-1, 1]) box(add, 1, 10, 18, mat.black(), [sx * 13, 5, 0], [0, 0, sx * 0.25]);
+  box(add, 26, 1, 18, mat.black(), [0, 0.5, 0]);
+  return root;
+}
+
+function trvs({ name, navy = false }) {
+  const { root, add } = scene(name);
+  const cream = C('cream-paint', '#ece7d3', 0.15, 0.5);
+  const bodyMat = navy ? C('navy-cabinet', '#2c3a6e', 0.3, 0.45) : cream;
+  box(add, 30, 30, 20, bodyMat, [0, 21, 0]);
+  if (navy) {
+    box(add, 26, 18, 18, C('grey-box', '#c9ced3', 0.2, 0.5), [0, 45, 0]);
+    face(add, 12, 9, 'screen', [0, 47, 9.05]);
+    add(new THREE.CylinderGeometry(1.2, 1.2, 2.5, 16), mat.red(), [-10, 55.5, 4]);
+    face(add, 5, 4, 'label', [-9, 30, 10.05]);
+    for (const x of [-4, 0, 4]) root.add(gauge(add, x, 33, 10, 1.4));
+  } else {
+    // sloped top with control panel and gauges
+    // side profile (shape x = -world z, y up), extruded across the width (world x)
+    const top = new THREE.Shape();
+    top.moveTo(-10, 0);
+    top.lineTo(10, 0);
+    top.lineTo(10, 12);
+    top.lineTo(-2, 12);
+    top.lineTo(-10, 7);
+    top.lineTo(-10, 0);
+    const tg = new THREE.ExtrudeGeometry(top, { depth: 30, bevelEnabled: false });
+    add(tg, cream, [-15, 36, 0], [0, Math.PI / 2, 0]);
+    face(add, 11, 13, 'panel', [-9, 26, 10.05]);
+    face(add, 16, 26, 'grille', [7, 21, 10.05], [0, 0, 0], 0.6);
+    face(add, 18, 26, 'grille', [15.05, 21, 0], [0, Math.PI / 2, 0], 0.6);
+    for (const x of [-11, -7, -3]) root.add(gauge(add, x, 46, 6.6, 1.3));
+    vessel(add, { R: 3.5, H: 8, y0: 48, x: 3, z: -3, material: cream, flange: 0.7, bolts: 6 });
+    for (const x of [-12, -6]) add(new THREE.CylinderGeometry(0.8, 0.8, 3, 12), mat.brass(), [x, 10, 11], [Math.PI / 2, 0, 0]);
+  }
+  for (const [x, z] of [[-12, -7], [12, -7], [-12, 7], [12, 7]]) caster(add, x, z, 0, 1.6);
+  box(add, 30, 1, 20, mat.dark(), [0, 5.9, 0]);
+  return root;
+}
+
+function wsWd({ name }) {
+  const { root, add } = scene(name);
+  box(add, 26, 1.2, 16, mat.black(), [2, 0.6, 0]);
+  box(add, 1.2, 34, 12, mat.black(), [10, 17, -2]);
+  // BU-like canister + motor
+  add(lathe([[0, 10], [6.5, 10], [7, 11], [7, 21], [7.3, 21.3]]), mat.alu(), [-4, 0, 1]);
+  ribbedLid(add, 7, 21.3, 2.6, 14);
+  root.children.slice(-16).forEach(m => (m.position.x += -4 * S, m.position.z += 1 * S));
+  tHandle(add, 24.2, 11, 0.45);
+  root.children.slice(-5).forEach(m => (m.position.x += -4 * S, m.position.z += 1 * S));
+  box(add, 6, 5, 6, mat.alu(), [-4, 7.5, 1]);
+  box(add, 5, 8, 7, mat.motor(), [-12, 12, 1]);
+  root.add(gauge(add, -1, 6.5, 4.2, 1.7));
+  // water separator vessel
+  add(new THREE.CylinderGeometry(4, 4, 20, 40), mat.steel(), [5, 22, 1]);
+  add(new THREE.CylinderGeometry(4.05, 4.05, 7, 40, 1, true), mat.glass(), [5, 8.5, 1]);
+  add(new THREE.SphereGeometry(4, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2), mat.steel(), [5, 32, 1]);
+  const lbl = new THREE.PlaneGeometry(5, 5, 12, 1);
+  lbl.translate(0, 0, 0.06);
+  add(wrap(lbl, 4.02, 24), mat.tex('label', 0.5), [5, 0, 1]);
+  pipe(add, [[1, 30, 1], [3, 34, 1], [5, 34.5, 1]], 0.5);
+  return root;
+}
+
+function trap({ name }) {
+  const { root, add } = scene(name);
+  const g = C('machine-green', '#b9d9b0', 0.2, 0.5);
+  box(add, 30, 22, 18, g, [0, 11, 0]);
+  box(add, 18, 14, 14, g, [-4, 29, -1]);
+  box(add, 10, 16, 8, g, [12, 30, -2]);
+  // inclined conveyor chute
+  const ch = box(add, 28, 2, 12, C('chute-grey', '#8d968c', 0.5, 0.4), [-4, 22, 6], [0, 0, 0.32]);
+  ch.name = 'conveyor';
+  for (let i = 0; i < 7; i++) box(add, 0.6, 0.8, 11, mat.dark(), [-16 + i * 4, 18.6 + i * 1.32, 6], [0, 0, 0.32]);
+  face(add, 9, 7, 'label', [-6, 8, 9.05]);
+  face(add, 8, 10, 'panel', [12, 30, 2.05]);
+  add(new THREE.CylinderGeometry(3, 3, 8, 24), mat.dark(), [-12, 34, -2], [0, 0, Math.PI / 2]);
+  box(add, 32, 1, 20, mat.dark(), [0, 0.5, 0]);
+  return root;
+}
+
+function quicktron({ name }) {
+  const { root, add } = scene(name);
+  add(lathe([[0, 0], [2.2, 0], [2.4, 1.5], [3.6, 3], [5.8, 9], [6.2, 22], [6.6, 22.5], [6.6, 25], [5.6, 27], [3.2, 28.6], [0, 28.8]], 72), mat.steel());
+  add(new THREE.CylinderGeometry(2.2, 2.2, 2.4, 6), mat.chrome(), [0, 30, 0]);
+  add(new THREE.CylinderGeometry(1.6, 1.6, 5, 24), mat.chrome(), [6.5, 24, 0], [0, 0, Math.PI / 2]);
+  add(new THREE.CylinderGeometry(2, 2, 1.2, 6), mat.chrome(), [9, 24, 0], [0, 0, Math.PI / 2]);
+  add(new THREE.CylinderGeometry(1.6, 1.6, 3, 24), mat.chrome(), [0, -1.4, 0]);
+  const lbl = new THREE.PlaneGeometry(7, 9, 12, 1);
+  lbl.translate(0, 0, 0.06);
+  add(wrap(lbl, 6.02, 16), mat.tex('label', 0.5));
+  return root;
+}
+
+function truck({ name }) {
+  const { root, add } = scene(name);
+  const white = C('truck-white', '#f2f3f1', 0.25, 0.35);
+  // cab
+  const cab = new THREE.Shape();
+  cab.moveTo(0, 0);
+  cab.lineTo(16, 0);
+  cab.lineTo(16, 18);
+  cab.lineTo(5, 18);
+  cab.lineTo(0, 10);
+  cab.lineTo(0, 0);
+  const cg = new THREE.ExtrudeGeometry(cab, { depth: 20, bevelEnabled: true, bevelThickness: 0.6, bevelSize: 0.6, bevelSegments: 3 });
+  add(cg, white, [-38, 8, -10]);
+  add(new THREE.PlaneGeometry(14, 8), M('glass-dark', '#22303c', 0.6, 0.15), [-37.4, 21, 0], [0, -Math.PI / 2, 0]);
+  // chassis + flatbed
+  box(add, 70, 3, 18, mat.dark(), [2, 8, 0]);
+  box(add, 50, 1.4, 21, C('bed', '#d7d9d6', 0.3, 0.45), [11, 10.2, 0]);
+  for (const x of [-30, 20, 28]) for (const z of [-9.5, 9.5]) {
+    add(new THREE.CylinderGeometry(5, 5, 3, 32), mat.dark(), [x, 5, z], [Math.PI / 2, 0, 0]);
+    add(new THREE.CylinderGeometry(2.8, 2.8, 3.2, 24), mat.brushed(), [x, 5, z], [Math.PI / 2, 0, 0]);
+  }
+  // equipment on the bed
+  vessel(add, { R: 4.5, H: 12, y0: 11, x: -8, z: -4, material: bronze(), flange: 0.8, bolts: 8 });
+  box(add, 12, 14, 9, C('equip-cream', '#e7e4d6', 0.2, 0.5), [6, 18, -4]);
+  box(add, 10, 18, 6, C('panel-cream', '#efede2', 0.2, 0.5), [22, 20, 6]);
+  face(add, 8.4, 14, 'panel', [22, 20, 9.05]);
+  box(add, 10, 10, 8, C('equip-grey', '#c8ccd0', 0.3, 0.45), [32, 16, -4]);
+  add(new THREE.TorusGeometry(4, 0.7, 10, 32), mat.dark(), [-2, 14, 6]);
+  add(new THREE.CylinderGeometry(2, 2, 6, 20), mat.red(), [-14, 14, 6]);
+  face(add, 5, 3.6, 'label', [30, 16, 0.05]);
+  return root;
+}
+
 // ---------- build all ----------
 const textures = {
   'wrap-M': () => TEX.wrap('#2f9d3f'),
@@ -451,7 +741,10 @@ const textures = {
   wound: TEX.wound,
   fiber: TEX.fiber,
   'engrave-msc': () => TEX.engrave('MSC-42'),
-  'engrave-oil': () => TEX.engrave('OIL SIDE')
+  'engrave-oil': () => TEX.engrave('OIL SIDE'),
+  panel: () => TEX.panel(),
+  grille: () => TEX.grille(),
+  screen: () => TEX.screen()
 };
 
 const jobs = [
@@ -469,7 +762,21 @@ const jobs = [
   ['mag-plate-long', magPlate({ name: 'Barra magnética longa', L: 26, W: 4.6 })],
   ['mag-disc', magDisc({ name: 'MSC' })],
   ['mag-box', magBox({ name: 'MSD', w: 15, d: 15 })],
-  ['mag-rect', magBox({ name: 'MSR', w: 20, d: 13, slots: true })]
+  ['mag-rect', magBox({ name: 'MSR', w: 20, d: 13, slots: true })],
+  ['ss', ssHousing({ name: 'Série SS' })],
+  ['osca-al', oscaAl({ name: 'OSCA CS-AL' })],
+  ['osca-cart', oscaCart({ name: 'OSCA CS-SS média capacidade' })],
+  ['osca-su', oscaTallOnBase({ name: 'OSCA CS-SU', bodyMat: mat.steel() })],
+  ['osca-ss-alta', oscaTallOnBase({ name: 'OSCA CS-SS alta capacidade', bodyMat: bronze(), cart: true })],
+  ['osca-os', oscaOs({ name: 'OSCA OS' })],
+  ['trcs', trcs({ name: 'TRCS-100' })],
+  ['bf-20', bf20({ name: 'BF-20' })],
+  ['trvs', trvs({ name: 'TRVS' })],
+  ['trvs-n', trvs({ name: 'TRVS-N30E', navy: true })],
+  ['ws-wd', wsWd({ name: 'WS-WD' })],
+  ['trap', trap({ name: 'TRAP' })],
+  ['quicktron', quicktron({ name: 'Quicktron' })],
+  ['truck', truck({ name: 'Caminhão de filtragem' })]
 ];
 // filter elements: one per series and proportion (Ø x H in mm)
 const DIAM = { 30: 104, 50: 143, 100: 179, 300: 303 };

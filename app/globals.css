@@ -607,3 +607,11 @@ a.chip:hover { background: rgba(0,134,209,0.18); }
 .featured3d__item figcaption { display: grid; gap: 4px; padding: 0 24px 22px; }
 .featured3d__item figcaption b { font-family: var(--head); font-size: 1.35rem; color: var(--deep); }
 .featured3d__item figcaption a { color: var(--clear); font-weight: 700; font-family: var(--head); }
+
+/* series page: 3D + highlights */
+.series-top { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+.series-top__3d { position: relative; background: radial-gradient(circle at 50% 42%, #ffffff, #e6ecf7 75%); border: 1px solid var(--line); border-radius: 28px; padding: 8px 8px 14px; }
+.series-top__3d .machine3d figcaption { color: var(--muted); }
+.series-top__3d .machine3d__loading::after { border-color: rgba(8,0,89,0.12); border-top-color: var(--clear); }
+.series-top .highlights { grid-template-columns: 1fr; margin: 0; }
+@media (max-width: 900px) { .series-top { grid-template-columns: 1fr; } }

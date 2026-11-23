@@ -2,10 +2,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CatalogButton } from '@/components/Catalog';
 import Icon from '@/components/Icon';
+import Machine3D from '@/components/Machine3D';
 import PageHero from '@/components/PageHero';
 import ProductCard from '@/components/ProductCard';
 import { SERIES_META } from '@/lib/catalog';
-import { getModel, getSeries, productHref, quoteHref, series } from '@/lib/site';
+import { getModel, getSeries, model3d, productHref, quoteHref, series } from '@/lib/site';
 
 export function generateStaticParams() {
   return series.map(s => ({ serie: s.slug }));
@@ -22,6 +23,7 @@ export default async function Serie({ params }) {
   const s = getSeries((await params).serie);
   if (!s) notFound();
   const meta = SERIES_META[s.slug];
+  const hero = getModel(s.groups[0]?.m[0]);
   return (
     <>
       <PageHero eyebrow={s.title} title={meta.line} text={`${s.intro}${meta.volume && meta.volume !== 'Consulte' ? ` ${meta.volume}.` : ''}`} crumbs={[{ label: 'Soluções', href: '/solucoes' }, { label: s.title }]}>
@@ -31,8 +33,14 @@ export default async function Serie({ params }) {
         </div>
       </PageHero>
       <section className="section section--soft" style={{ paddingBottom: 0 }}>
-        <div className="container">
-          <ul className="highlights highlights--4">
+        <div className="container series-top">
+          {hero && model3d(hero.slug) ? (
+            <div className="series-top__3d">
+              <span className="badge-3d">3D</span>
+              <Machine3D url={model3d(hero.slug)} photo={hero.limg || hero.img} height={420} label={`Modelo 3D ${s.title}`} hint={`${hero.name} · arraste para girar`} />
+            </div>
+          ) : null}
+          <ul className="highlights">
             {meta.highlights.map(([icon, text]) => (
               <li key={text}>
                 <span className="highlights__ic"><Icon name={icon} /></span>
