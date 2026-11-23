@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { ADDRESS, EMAIL, LOGO, WHATSAPP_LABEL, series, wa, waCatalog } from '@/lib/site';
+import { CatalogButton } from './Catalog';
+import { ADDRESS, EMAIL, HOURS, LOGO, WHATSAPP_LABEL, quoteHref, series, wa } from '@/lib/site';
 
 export default function Footer() {
   return (
@@ -10,12 +11,10 @@ export default function Footer() {
           <p>Fale com um especialista e receba a indicação do sistema ideal para a sua operação.</p>
         </div>
         <div className="row-gap">
-          <a className="btn btn-light" href={wa('Olá! Vim pelo site da Triple R e gostaria de falar com um especialista.')} target="_blank" rel="noopener">
-            Falar no WhatsApp
-          </a>
-          <a className="btn btn-ghost-light" href={waCatalog()} target="_blank" rel="noopener">
-            Receber catálogo
-          </a>
+          <Link className="btn btn-light" href={quoteHref()}>
+            Pedir orçamento
+          </Link>
+          <CatalogButton className="btn btn-ghost-light" />
         </div>
       </div>
       <div className="container footer-grid">
@@ -23,19 +22,16 @@ export default function Footer() {
           <span className="logo-plate">
             <img src={LOGO} alt="Triple R" width="176" height="44" loading="lazy" />
           </span>
-          <p>Tecnologia japonesa de purificação de óleo com mais de 50 anos de mercado e presença em mais de 50 países.</p>
+          <p>Purificação de óleo com tecnologia patenteada em 1967 e fabricada no Japão. Mais de 50 anos de mercado e presença em mais de 50 países.</p>
         </div>
         <div>
           <h3>Soluções</h3>
-          <ul>
-            {series.slice(0, 7).map(s => (
+          <ul className="cols2">
+            {series.map(s => (
               <li key={s.slug}>
                 <Link href={`/solucoes/${s.slug}`}>{s.title}</Link>
               </li>
             ))}
-            <li>
-              <Link href="/solucoes">Ver todas</Link>
-            </li>
           </ul>
         </div>
         <div>
@@ -54,6 +50,7 @@ export default function Footer() {
             <li><a href={wa('Olá! Vim pelo site da Triple R.')} target="_blank" rel="noopener">WhatsApp {WHATSAPP_LABEL}</a></li>
             <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
             <li>{ADDRESS}</li>
+            {HOURS ? <li>{HOURS}</li> : null}
           </ul>
         </div>
       </div>

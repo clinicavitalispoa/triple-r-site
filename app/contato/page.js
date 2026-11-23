@@ -1,34 +1,42 @@
+import { CatalogButton } from '@/components/Catalog';
 import ContactForm from '@/components/ContactForm';
 import PageHero from '@/components/PageHero';
-import { ADDRESS, EMAIL, WHATSAPP_LABEL, wa, waCatalog } from '@/lib/site';
+import { ADDRESS, EMAIL, HOURS, WHATSAPP_LABEL, wa } from '@/lib/site';
 
-export const metadata = { title: 'Contato', description: 'Fale com a Triple R: orçamento, catálogo e suporte técnico.' };
+export const metadata = { title: 'Contato', description: 'Peça um orçamento à Triple R: formulário, e-mail, WhatsApp e endereço em Suzano - SP.' };
+
+const MAP = `https://www.google.com/maps?q=${encodeURIComponent('R. Manoel Teixeira, 31 - Parque Maria Helena, Suzano - SP, 08683-340')}&output=embed`;
 
 export default function Contato() {
   return (
     <>
-      <PageHero eyebrow="Contato" title="Fale com quem entende de óleo limpo" text="Nossa equipe ajuda a sua empresa a melhorar a qualidade do óleo, aumentar a vida útil dos equipamentos e reduzir os custos de manutenção." crumbs={[{ label: 'Contato' }]} />
+      <PageHero eyebrow="Contato" title="Fale com a equipe técnica da Triple R" text="Conte qual é a máquina, o tipo e o volume de óleo. Indicamos o sistema certo e enviamos o orçamento." crumbs={[{ label: 'Contato' }]} />
       <section className="section">
         <div className="container split split--top">
+          <ContactForm />
           <div className="contact-cards">
-            <a className="contact-card" href={wa('Olá! Vim pelo site da Triple R e gostaria de um orçamento.')} target="_blank" rel="noopener">
-              <span className="ic" style={{ background: '#25d366' }}>✆</span>
-              <div><b>WhatsApp · {WHATSAPP_LABEL}</b><span>Orçamentos e atendimento comercial</span></div>
-            </a>
-            <a className="contact-card" href={waCatalog()} target="_blank" rel="noopener">
-              <span className="ic">▤</span>
-              <div><b>Receber catálogo</b><span>Linha completa e fichas técnicas</span></div>
-            </a>
             <a className="contact-card" href={`mailto:${EMAIL}`}>
               <span className="ic">@</span>
-              <div><b>{EMAIL}</b><span>Resposta em horário comercial</span></div>
+              <div><b>{EMAIL}</b><span>Orçamentos, compras e suporte</span></div>
             </a>
-            <a className="contact-card" href="https://maps.google.com/?q=R.+Manoel+Teixeira,+31+-+Suzano+-+SP" target="_blank" rel="noopener">
+            <a className="contact-card" href={wa('Olá! Vim pelo site da Triple R.')} target="_blank" rel="noopener">
+              <span className="ic" style={{ background: '#25d366' }}>✆</span>
+              <div><b>WhatsApp {WHATSAPP_LABEL}</b><span>Atendimento comercial</span></div>
+            </a>
+            <div className="contact-card">
               <span className="ic">⌖</span>
-              <div><b>Endereço</b><span>{ADDRESS}</span></div>
-            </a>
+              <div><b>Endereço</b><span>{ADDRESS}</span>{HOURS ? <span style={{ display: 'block' }}>{HOURS}</span> : null}</div>
+            </div>
+            <iframe className="map" src={MAP} title="Mapa: Triple R Mercosul em Suzano - SP" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+            <div className="contact-card contact-card--catalog">
+              <span className="ic">▤</span>
+              <div>
+                <b>Catálogo completo em PDF</b>
+                <span>16 linhas de produto e 79 modelos</span>
+              </div>
+              <CatalogButton className="btn btn-ghost" />
+            </div>
           </div>
-          <ContactForm />
         </div>
       </section>
     </>

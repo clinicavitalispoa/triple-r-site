@@ -1,23 +1,31 @@
-import ProductCard from '@/components/ProductCard';
+import Link from 'next/link';
+import { CatalogButton } from '@/components/Catalog';
 import PageHero from '@/components/PageHero';
-import { series, seriesCover, waCatalog } from '@/lib/site';
+import SolutionsFilter from '@/components/SolutionsFilter';
+import { APPS, SERIES_META, VOLUMES } from '@/lib/catalog';
+import { quoteHref, series, seriesCover } from '@/lib/site';
 
-export const metadata = { title: 'Soluções', description: 'Purificadores de óleo by-pass e off-line, elementos filtrantes, desidratadores a vácuo e mais.' };
+export const metadata = { title: 'Soluções', description: 'Purificadores de óleo by-pass e off-line, elementos filtrantes, desidratadores a vácuo e mais. Filtre por aplicação e volume de óleo.' };
 
 export default function Solucoes() {
+  const items = series.map(s => ({
+    slug: s.slug,
+    title: s.title,
+    image: seriesCover(s),
+    count: s.groups.reduce((n, g) => n + g.m.length, 0),
+    ...SERIES_META[s.slug]
+  }));
   return (
     <>
-      <PageHero eyebrow="Soluções" title="Soluções personalizadas para o seu maquinário" text="Otimize a eficiência e a rentabilidade das suas máquinas. Escolha a linha ideal ou fale com um especialista para uma indicação técnica." crumbs={[{ label: 'Soluções' }]}>
+      <PageHero eyebrow="Soluções" title="Encontre a solução para o seu óleo" text="Filtre pela aplicação e pelo volume de óleo do sistema. Na dúvida, nossa equipe técnica indica o modelo." crumbs={[{ label: 'Soluções' }]}>
         <div className="row-gap" style={{ marginTop: 28 }}>
-          <a className="btn btn-clear" href={waCatalog()} target="_blank" rel="noopener">Receber catálogo completo</a>
-          <a className="btn btn-ghost-light" href="/ferramentas">Calcular economia</a>
+          <Link className="btn btn-clear" href={quoteHref()}>Pedir orçamento</Link>
+          <CatalogButton className="btn btn-ghost-light" />
         </div>
       </PageHero>
       <section className="section section--soft">
-        <div className="container grid-cards">
-          {series.map(s => (
-            <ProductCard key={s.slug} href={`/solucoes/${s.slug}`} image={seriesCover(s)} title={s.title} text={s.sub} cta={`${s.groups.reduce((n, g) => n + g.m.length, 0)} modelo(s)`} />
-          ))}
+        <div className="container">
+          <SolutionsFilter items={items} apps={APPS} volumes={VOLUMES} />
         </div>
       </section>
     </>

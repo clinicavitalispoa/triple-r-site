@@ -1,14 +1,16 @@
-import Image from 'next/image';
 import Link from 'next/link';
-import MachineHolo from '@/components/MachineHolo';
-import Machine3D from '@/components/Machine3D';
-import SectorCarousel from '@/components/SectorCarousel';
-import BlurText from '@/components/reactbits/BlurText/BlurText';
-import ProductCard from '@/components/ProductCard';
-import Reveal from '@/components/Reveal';
+import AnimatedWords from '@/components/AnimatedWords';
+import { CatalogButton } from '@/components/Catalog';
 import CountUp from '@/components/CountUp';
 import Faq from '@/components/Faq';
-import { getModel, img, sectorItems, series, seriesCover, wa, waCatalog } from '@/lib/site';
+import Machine3D from '@/components/Machine3D';
+import MachineHolo from '@/components/MachineHolo';
+import ProductCard from '@/components/ProductCard';
+import Reveal from '@/components/Reveal';
+import SectorCarousel from '@/components/SectorCarousel';
+import { SERIES_META } from '@/lib/catalog';
+import { HOME_SECTORS } from '@/lib/sectors';
+import { getModel, img, productHref, quoteHref, sectorItems, series, seriesCover } from '@/lib/site';
 
 const CLIENTS = ['General-Motors', 'KLM-Royal-Dutch-Airlines', 'Hyundai', 'Mercedes-Benz', 'Coca-cola', 'AGFA', 'Ford', 'Rolls-Royce-1', 'Nissan', 'Esso', 'General-Electric', 'Usiminas', 'Biosev', 'Raizen', 'CSN'];
 
@@ -20,6 +22,12 @@ const FEATURED = [
 
 const HOME_SERIES = ['serie-bu', 'serie-se', 'serie-osca', 'desidratador-a-vacuo-termovacuo', 'serie-tr', 'elementos-filtrantes'];
 
+// Texts as published on the current site; confirm company/role with the client before launch.
+const TESTIMONIALS = [
+  { name: 'Marco Carlota', photo: '2023/07/Marco-Carlota-1.webp', text: 'Empresa com 12 anos de mercado. Qualidade no atendimento e nos produtos. Comprometimento com a satisfação dos clientes.' },
+  { name: 'Bruno Rodrigo', photo: '2023/07/Bruno-Rodrigo.webp', text: 'Super indico, pois entregou tudo que foi solicitado. Além disso, rendeu-me muita produtividade, custo-benefício e valorização para com o meio ambiente.' }
+];
+
 export default function Home() {
   return (
     <>
@@ -29,26 +37,20 @@ export default function Home() {
         <div className="hero-r" aria-hidden="true" />
         <div className="container hero-grid">
           <div>
-            <span className="eyebrow">Tecnologia japonesa · desde 1967</span>
-            <div className="hero-title" role="heading" aria-level={1}>
-              <BlurText text="Óleo limpo é" delay={110} stepDuration={0.4} direction="bottom" trigger="load" />
-              <BlurText text="máquina produzindo." className="accent" delay={110} stepDuration={0.4} direction="bottom" trigger="load" />
-            </div>
-            <p className="lead">
-              Os purificadores Triple R removem partículas sólidas de até 1 mícron, água, borra e verniz em um único elemento. Menos paradas, óleo que dura até 5 vezes mais e até 80% menos custo de manutenção.
-            </p>
+            <span className="eyebrow">Patente desde 1967 · fabricação japonesa</span>
+            <h1 className="hero-title">
+              <AnimatedWords text="Óleo limpo é" delay={110} />{' '}
+              <AnimatedWords text="máquina produzindo." className="accent" delay={110} start={330} />
+            </h1>
+            <p className="lead">Os purificadores Triple R removem partículas de até 1 mícron, água, borra e verniz em um único elemento. Menos paradas e óleo que dura até 5 vezes mais.</p>
             <ul className="hero-badges">
               <li>Patente original RRR</li>
               <li>+50 países</li>
               <li>+100.000 instalações</li>
             </ul>
             <div className="row-gap">
-              <a className="btn btn-clear" href={wa('Olá! Vim pelo site da Triple R e gostaria de um orçamento.')} target="_blank" rel="noopener">
-                Pedir orçamento
-              </a>
-              <Link className="btn btn-ghost-light" href="/produto/bu100e">
-                Conhecer a BU100E
-              </Link>
+              <Link className="btn btn-clear" href={quoteHref()}>Pedir orçamento</Link>
+              <CatalogButton className="btn btn-ghost-light" />
             </div>
           </div>
           <div className="hero-card">
@@ -68,56 +70,62 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section">
-        <div className="container split">
-          <Reveal variant="left">
-            <span className="eyebrow">Quem somos</span>
-            <div className="split-heading h2" role="heading" aria-level={2}>
-              <BlurText text="Muito mais que filtragem: purificação." delay={90} direction="top" />
-            </div>
-            <p className="lead">
-              Com mais de 50 anos de mercado, a tecnologia Triple R estende a vida útil do óleo e reduz paradas de produção causadas por contaminação. É o parceiro ideal para metas de Manutenção Produtiva Total (TPM) e de sustentabilidade.
-            </p>
-            <div className="row-gap" style={{ marginTop: 24 }}>
-              <Link className="btn btn-primary" href="/quem-somos">Conheça a Triple R</Link>
-              <Link className="btn btn-ghost" href="/beneficios">Ver benefícios</Link>
-            </div>
-          </Reveal>
-          <Reveal variant="right" delay={150}>
-            <div className="media-frame media-frame--glow float-y">
-              <Image src={img('2023/09/Infografico.png')} alt="Infográfico do funcionamento do purificador Triple R" fill sizes="(max-width: 900px) 100vw, 560px" />
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
       <section className="section section--dark">
         <div className="hero-r" aria-hidden="true" />
         <div className="container" style={{ position: 'relative' }}>
-          <div className="section-head">
-            <span className="eyebrow">Purificação 3 em 1</span>
-            <h2>Um elemento de 114 mm que captura o que os filtros comuns deixam passar.</h2>
-          </div>
-          <div className="rrr">
-            <div><b>&gt; 25 µm</b>Partículas grandes ficam retidas no topo do elemento, o que o torna também uma ferramenta de diagnóstico.</div>
-            <div><b>&gt; 15 µm</b>Partículas menores são capturadas na parte superior não comprimida do meio filtrante.</div>
-            <div><b>&gt; 1 µm</b>Micropartículas, água, borra e verniz ficam na parte inferior comprimida. O óleo sai com menos de 100 ppm de água.</div>
+          <div className="split split--top">
+            <Reveal variant="left">
+              <span className="eyebrow">Quem somos · purificação 3 em 1</span>
+              <h2>
+                <AnimatedWords text="Muito mais que filtragem: purificação." onView />
+              </h2>
+              <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: '1.08rem' }}>
+                Há mais de 50 anos a tecnologia Triple R estende a vida do óleo e reduz paradas por contaminação. O óleo atravessa 114 mm de celulose especial, que retém partículas, água, borra e verniz no mesmo elemento.
+              </p>
+              <Link className="btn btn-ghost-light" href="/quem-somos" style={{ marginTop: 10 }}>Conheça a Triple R</Link>
+            </Reveal>
+            <Reveal variant="right" delay={120}>
+              <div className="rrr rrr--stack">
+                <div><b>&gt; 25 µm</b>Partículas grandes ficam no topo do elemento, que vira também ferramenta de diagnóstico.</div>
+                <div><b>&gt; 15 µm</b>Partículas menores são capturadas na parte superior do meio filtrante.</div>
+                <div><b>&gt; 1 µm</b>Micropartículas, água, borra e verniz ficam na parte inferior comprimida.</div>
+              </div>
+            </Reveal>
           </div>
           <div className="stats" style={{ marginTop: 48 }}>
             <div><strong><CountUp to={50} prefix="+" /></strong><span>anos de tecnologia</span></div>
             <div><strong><CountUp to={50} prefix="+" /></strong><span>países atendidos</span></div>
-            <div><strong><CountUp to={80} suffix="%" /></strong><span>menos custo de manutenção</span></div>
-            <div><strong><CountUp to={5} suffix="x" /></strong><span>mais vida útil do óleo</span></div>
+            <div><strong><CountUp to={80} prefix="até " suffix="%" /></strong><span>menos custo de manutenção*</span></div>
+            <div><strong><CountUp to={5} prefix="até " suffix="x" /></strong><span>mais vida útil do óleo*</span></div>
           </div>
+          <p className="facts__src">* Segundo dados do fabricante (Triple R).</p>
         </div>
       </section>
 
       <section className="section">
         <div className="container">
+          <div className="section-head">
+            <span className="eyebrow">Soluções</span>
+            <h2>Uma solução para cada aplicação</h2>
+          </div>
+          <div className="grid-cards">
+            {HOME_SERIES.map(slug => {
+              const s = series.find(x => x.slug === slug);
+              const meta = SERIES_META[slug];
+              return <ProductCard key={slug} href={`/solucoes/${slug}`} image={seriesCover(s)} title={s.title} text={meta.line} badge={meta.volume !== 'Consulte' ? meta.volume : null} />;
+            })}
+          </div>
+          <div className="row-gap" style={{ marginTop: 32, justifyContent: 'center' }}>
+            <Link className="btn btn-primary" href="/solucoes">Ver todas as 16 linhas</Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="section section--soft">
+        <div className="container">
           <div className="section-head center">
             <span className="eyebrow">Destaques</span>
             <h2>Equipamentos em destaque</h2>
-            <p className="lead" style={{ marginInline: 'auto' }}>Passe o mouse ou toque nos cards para ver o efeito holográfico.</p>
           </div>
           <div className="holo-row">
             {FEATURED.map((f, i) => {
@@ -126,7 +134,7 @@ export default function Home() {
                 <Reveal as="figure" key={f.slug} delay={i * 100}>
                   <MachineHolo image={f.image} name={m.name} label={m.seriesTitle} width={280} preset={['rainbow', 'shards', 'glitter'][i]} />
                   <figcaption>
-                    <Link href={`/produto/${f.slug}`} style={{ color: 'var(--clear)' }}>Ver {m.name} →</Link>
+                    <Link href={productHref(f.slug)} style={{ color: 'var(--clear)' }}>Ver {m.name} →</Link>
                   </figcaption>
                 </Reveal>
               );
@@ -135,41 +143,44 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section section--soft">
-        <div className="container">
-          <div className="section-head">
-            <span className="eyebrow">Soluções</span>
-            <h2>Uma solução para cada aplicação</h2>
-            <p className="lead">Purificadores by-pass e off-line que se adaptam a máquinas existentes ou são integrados por fabricantes OEM.</p>
-          </div>
-          <div className="grid-cards">
-            {HOME_SERIES.map(slug => {
-              const s = series.find(x => x.slug === slug);
-              return <ProductCard key={slug} href={`/solucoes/${slug}`} image={seriesCover(s)} title={s.title} text={s.sub} />;
-            })}
-          </div>
-          <div className="row-gap" style={{ marginTop: 32, justifyContent: 'center' }}>
-            <Link className="btn btn-primary" href="/solucoes">Ver todas as soluções</Link>
-            <a className="btn btn-ghost" href={waCatalog()} target="_blank" rel="noopener">Receber catálogo</a>
-          </div>
-        </div>
-      </section>
-
       <section className="section section--dark">
         <div className="container" style={{ position: 'relative' }}>
           <div className="section-head">
             <span className="eyebrow">Setores</span>
-            <div className="split-heading h2" role="heading" aria-level={2}>
-              <BlurText text="Presente nas indústrias que não podem parar" delay={70} direction="top" />
-            </div>
+            <h2>
+              <AnimatedWords text="Presente nas indústrias que não podem parar" onView />
+            </h2>
           </div>
         </div>
         <Reveal variant="zoom">
-          <SectorCarousel items={sectorItems()} />
+          <SectorCarousel items={sectorItems(HOME_SECTORS)} />
         </Reveal>
+        <div className="row-gap" style={{ justifyContent: 'center', marginTop: 28 }}>
+          <Link className="btn btn-ghost-light" href="/setores">Ver todos os 11 setores</Link>
+        </div>
       </section>
 
       <section className="section">
+        <div className="container">
+          <div className="section-head center">
+            <span className="eyebrow">Depoimentos</span>
+            <h2>Quem usa, recomenda</h2>
+          </div>
+          <div className="testimonials">
+            {TESTIMONIALS.map((t, i) => (
+              <Reveal as="figure" className="testimonial" key={t.name} delay={i * 100}>
+                <blockquote>“{t.text}”</blockquote>
+                <figcaption>
+                  <img src={img(t.photo)} alt="" width="48" height="48" loading="lazy" />
+                  <span><b>{t.name}</b><span className="stars" aria-label="Avaliação 5 de 5">★★★★★</span></span>
+                </figcaption>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section section--soft">
         <div className="container">
           <div className="section-head center">
             <span className="eyebrow">FAQ</span>

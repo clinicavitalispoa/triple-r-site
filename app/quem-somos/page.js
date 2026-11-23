@@ -1,44 +1,35 @@
 import Image from 'next/image';
+import Link from 'next/link';
+import { CatalogButton } from '@/components/Catalog';
 import PageHero from '@/components/PageHero';
 import Reveal from '@/components/Reveal';
 import Timeline from '@/components/Timeline';
-import { img, proxied, wa } from '@/lib/site';
+import { img, proxied, quoteHref } from '@/lib/site';
 
-export const metadata = { title: 'Quem Somos', description: 'Conheça a história da Triple R, da patente de 1967 à Triple R Mercosul.' };
-
-const YEAR_IMG = {
-  1967: '2023/10/1967-1.png',
-  1974: '2023/10/1974-scaled.jpg',
-  2004: '2023/10/2004.png',
-  2008: '2023/10/2008-scaled.jpg',
-  2009: '2023/10/2009.jpg',
-  2013: '2023/09/QuemSomos-2013.png',
-  2023: '2023/10/2023-1.jpg'
-};
+export const metadata = { title: 'Quem Somos', description: 'Inventada nos EUA em 1967 e desenvolvida no Japão desde 1974: a história da Triple R e da Triple R Mercosul.' };
 
 const HISTORY = [
-  ['1967', 'O Sr. Russo, engenheiro da Ford Motor Co., inventa o primeiro purificador by-pass e registra a patente nos EUA. O objetivo era prolongar a vida útil do óleo do motor em até 100.000 km.'],
-  ['1974', 'O Sr. M. Morinaga assume a patente e os direitos de produção e vendas e funda a Triple R Industry Co. em Tochigi, no Japão.'],
-  ['2004', 'A Triple R Industry Co. do Japão obtém a certificação ISO 14001.'],
-  ['2008', 'Nasce a Triple R Mercosul, em São Paulo, para atender os países da América do Sul.'],
-  ['2009', 'A Triple R Industry Co. do Japão obtém a certificação ISO 9001.'],
-  ['2013', 'A Triple R amplia sua capacidade com uma nova fábrica de elementos totalmente automatizada.'],
-  ['2023', 'A Triple R Mercosul inicia a implementação da ISO 9001 nos processos de comercialização.']
+  { year: '1967', image: '2023/10/1967-1.png', text: 'Nos EUA, um engenheiro da Ford Motor Company inventa o primeiro purificador by-pass e patenteia a tecnologia “RRR – Oil Cleaner”. O objetivo: estender a troca de óleo de motor de 3.000 km para 100.000 km.' },
+  { year: '1974', image: '2023/10/1974-scaled.jpg', text: 'A patente e os direitos de produção vão para o Japão, onde é fundada a Triple R Industry Co., em Tochigi. Desde então, a tecnologia é desenvolvida e fabricada lá, com certificações ISO 14001 (2004) e ISO 9001 (2009).' },
+  { year: '2008', image: '2023/10/2008-scaled.jpg', text: 'Nasce a Triple R Mercosul, em São Paulo, para atender os países da América do Sul.' },
+  { year: '2013', image: '2023/09/QuemSomos-2013.png', text: 'A fábrica japonesa ganha uma linha de elementos totalmente automatizada. Em 2023, a Triple R Mercosul inicia a implementação da ISO 9001 na comercialização.' }
 ];
 
 export default function QuemSomos() {
   return (
     <>
-      <PageHero eyebrow="Quem somos" title="Conheça a Triple R" text="Produzimos sistemas de purificação de alta performance que resolvem problemas de contaminação de óleo. Tecnologia japonesa para otimizar a sua produção." crumbs={[{ label: 'Quem Somos' }]} />
+      <PageHero eyebrow="Quem somos" title="Inventada nos EUA, aperfeiçoada no Japão" text="Há mais de 50 anos a Triple R fabrica purificadores de óleo de alta performance. No Brasil, a Triple R Mercosul atende toda a América do Sul." crumbs={[{ label: 'Quem Somos' }]}>
+        <div className="row-gap" style={{ marginTop: 28 }}>
+          <Link className="btn btn-clear" href={quoteHref()}>Pedir orçamento</Link>
+          <CatalogButton className="btn btn-ghost-light" />
+        </div>
+      </PageHero>
       <section className="section">
         <div className="container split">
           <Reveal variant="left">
-            <span className="eyebrow">Mais de 50 anos de tradição</span>
-            <h2>Muito mais que filtragem: purificação</h2>
-            <div className="prose">
-              <p>A Triple R nasceu nos EUA, nos anos 1960, com a tecnologia patenteada “RRR – Oil Cleaner”. O objetivo inicial era aumentar a vida útil do óleo do motor em caminhões. Na época, a troca era feita a cada 3.000 km. O primeiro purificador Triple R estendeu esse intervalo para 100.000 km.</p>
-              <p>Desde então, o desenvolvimento de soluções é a nossa maior prioridade. Atualizamos continuamente os produtos para entregar óleo com a mais alta qualidade e atender às indústrias em constante mudança. Hoje, os sistemas Triple R são parte fundamental da proteção das máquinas.</p>
-            </div>
+            <span className="eyebrow">Muito mais que filtragem</span>
+            <h2>Purificação: partículas, água, borra e verniz num só elemento</h2>
+            <p className="lead">Desde o início, a prioridade é desenvolver soluções. Os produtos são atualizados continuamente para atender indústrias em constante mudança, e hoje os sistemas Triple R protegem máquinas em mais de 50 países.</p>
           </Reveal>
           <Reveal delay={120} variant="right">
             <div className="media-frame media-frame--glow float-y">
@@ -51,22 +42,9 @@ export default function QuemSomos() {
         <div className="container" style={{ maxWidth: 1040 }}>
           <div className="section-head center">
             <span className="eyebrow">Jornada de sucesso</span>
-            <h2>Nossa história</h2>
+            <h2>Nossa história em 4 marcos</h2>
           </div>
-          <Timeline items={HISTORY.map(([year, text]) => ({ year, text, image: proxied(YEAR_IMG[year], 750) }))} />
-        </div>
-      </section>
-      <section className="section section--dark">
-        <div className="hero-r" aria-hidden="true" />
-        <div className="container split" style={{ position: 'relative' }}>
-          <div>
-            <span className="eyebrow">Dê o próximo passo</span>
-            <h2>Mude da filtragem para a limpeza total do óleo.</h2>
-            <p style={{ color: 'rgba(255,255,255,0.75)' }}>Nossa engenharia é especialista em resolver problemas de contaminação de óleo, sempre de forma simples e com baixo custo.</p>
-          </div>
-          <div className="row-gap">
-            <a className="btn btn-light" href={wa('Olá! Gostaria de encontrar a solução Triple R ideal para minha operação.')} target="_blank" rel="noopener">Encontre sua solução</a>
-          </div>
+          <Timeline items={HISTORY.map(h => ({ ...h, image: proxied(h.image, 750) }))} />
         </div>
       </section>
     </>

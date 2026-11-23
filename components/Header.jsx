@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import GooeyNav from './reactbits/GooeyNav/GooeyNav';
-import { LOGO, NAV, wa } from '@/lib/site';
+import { LOGO, NAV, quoteHref } from '@/lib/site';
 
 const activeFor = path => {
   if (path === '/') return 0;
@@ -51,9 +51,9 @@ export default function Header() {
             size="sm"
           />
         </div>
-        <a className="btn btn-primary header-cta" href={wa('Olá! Vim pelo site da Triple R e gostaria de um orçamento.')} target="_blank" rel="noopener">
+        <Link className="btn btn-primary header-cta" href={quoteHref()}>
           Pedir orçamento
-        </a>
+        </Link>
         <button className="burger" aria-label="Abrir menu" aria-expanded={open} onClick={() => setOpen(o => !o)}>
           <span />
           <span />
@@ -66,9 +66,9 @@ export default function Header() {
             {n.label}
           </Link>
         ))}
-        <a className="btn btn-primary" href={wa('Olá! Vim pelo site da Triple R e gostaria de um orçamento.')} target="_blank" rel="noopener">
-          Pedir orçamento no WhatsApp
-        </a>
+        <Link className="btn btn-primary" href={quoteHref()}>
+          Pedir orçamento
+        </Link>
       </nav>
     </header>
   );

@@ -2,7 +2,7 @@
 import { mkdir, writeFile, access } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 
-const COMPONENTS = ['GooeyNav', 'HoloCard', 'SpotlightCard', 'ModelViewer', 'BlurText'];
+const COMPONENTS = ['GooeyNav', 'HoloCard', 'SpotlightCard', 'ModelViewer'];
 
 // A patch that cannot be applied keeps the committed local copy instead of the upstream file.
 class PatchError extends Error {}

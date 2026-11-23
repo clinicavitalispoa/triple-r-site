@@ -1,105 +1,97 @@
 import Image from 'next/image';
+import Link from 'next/link';
+import { CatalogButton } from '@/components/Catalog';
+import Icon from '@/components/Icon';
 import PageHero from '@/components/PageHero';
 import Reveal from '@/components/Reveal';
-import { img, wa } from '@/lib/site';
+import { img, quoteHref } from '@/lib/site';
 
-export const metadata = { title: 'Benefícios', description: 'Como a purificação de óleo elimina verniz, borra, água e partículas sólidas e reduz custos.' };
+export const metadata = { title: 'Benefícios', description: 'Partículas, água, borra e verniz: o dano de cada contaminante e como o purificador Triple R remove os quatro em um único elemento.' };
 
-const LIST = ['Maior vida útil dos componentes', 'Menor custo de manutenção', 'Mais confiabilidade operacional', 'Melhor eficiência energética', 'Preservação do meio ambiente'];
-
-const TOPICS = [
+const CONTAMINANTS = [
   {
-    eyebrow: 'Água',
-    title: 'A água pode reduzir a vida útil das máquinas em até 50%',
-    image: '2023/07/Oxidacao-do-oleo.webp',
-    text: [
-      'A água oxida o óleo, principalmente na presença de catalisadores como cobre e ferro. Quanto maior a oxidação, maior o TAN (Total Acid Number). Quando a acidez chega a 2 mg KOH/g, o óleo precisa ser trocado para evitar danos graves.',
-      'Nas folgas mínimas das máquinas modernas, a umidade se expande no vácuo e causa microexplosões nas superfícies de contato. Isso gera desgaste, corrosão e fadiga, além de criar o ambiente ideal para bactérias que quebram os aditivos.'
-    ]
+    icon: 'particle',
+    name: 'Partículas',
+    damage: 'Riscam bombas, válvulas e servoválvulas, que trabalham com folgas de 1 a 10 µm.',
+    fix: 'O elemento de 114 mm retém partículas de até 1 mícron em 3 estágios.'
   },
   {
-    eyebrow: 'By-pass',
-    title: 'Por que o by-pass Triple R é mais eficaz que o filtro de fluxo total?',
-    image: '2023/07/ByPass-Versus-Line.webp',
-    text: [
-      'Os purificadores Triple R são instalados em by-pass: não sofrem altas vazões, altas pressões nem pulsações do sistema. O elemento opera sempre em condições ideais, com fluxo reduzido, baixa pressão e sem estresse.',
-      'São 114 mm de meio filtrante, uma microfiltração em profundidade de verdade, contra 1 ou 2 mm de um filtro de linha convencional.'
-    ]
+    icon: 'drop',
+    name: 'Água',
+    damage: 'Oxida o óleo, consome os aditivos e corrói as superfícies metálicas.',
+    fix: 'A celulose absorve a água e deixa o óleo com menos de 100 ppm. O TRVS remove até a dissolvida.'
   },
   {
-    eyebrow: 'Partículas sólidas',
-    title: 'O sistema hidráulico gera partículas continuamente',
-    image: '2023/07/Particulas-Solidas.webp',
-    text: [
-      'Bombas e servo-válvulas têm folgas críticas de 1 a 10 µm. A maioria dos fabricantes exige limpeza NAS 6 ou ISO 17/15/12 para evitar falhas prematuras.',
-      'Uma bomba de 200 L/min com óleo contaminado (NAS 12) processa mais de 3.000 kg de partículas por ano. Com óleo limpo (NAS 4), são apenas 6 kg.'
-    ]
+    icon: 'sludge',
+    name: 'Borra',
+    damage: 'Resíduo pegajoso que satura os filtros antes da hora e isola os trocadores de calor.',
+    fix: 'A mídia em profundidade absorve a borra junto com as partículas.'
   },
   {
-    eyebrow: 'Verniz e borra',
-    title: 'A borra causa consequências graves',
-    image: '2023/07/Verniz-e-Borra.webp',
-    text: [
-      'Os resíduos de oxidação se formam continuamente e aceleram com calor, oxigênio e partículas metálicas. O verniz retém contaminantes, cria uma superfície abrasiva, isola trocadores de calor e satura filtros.',
-      'A presença de resinas pode aumentar o atrito em 5 a 6 vezes, o que causa maior consumo de energia e válvulas lentas ou travadas.'
-    ]
+    icon: 'varnish',
+    name: 'Verniz',
+    damage: 'Gruda nas válvulas, aumenta o atrito e chega a travar o carretel.',
+    fix: 'Os resíduos de oxidação ficam presos na celulose antes de virar verniz.'
   }
+];
+
+const FACTS = [
+  ['até 50%', 'menos vida útil das máquinas quando há água no óleo'],
+  ['3.000 kg', 'de partículas por ano passam por uma bomba de 200 L/min com óleo NAS 12. Com óleo NAS 4, cerca de 6 kg'],
+  ['5 a 6 vezes', 'mais atrito nas válvulas quando há resinas (verniz) no óleo']
 ];
 
 export default function Beneficios() {
   return (
     <>
-      <PageHero eyebrow="Benefícios" title="Os benefícios da purificação de óleo para o seu negócio" text="Elimine verniz, borra, água e partículas sólidas e mantenha o óleo limpo, com resultado garantido." crumbs={[{ label: 'Benefícios' }]} />
+      <PageHero eyebrow="Benefícios" title="Quatro contaminantes, um único elemento" text="Partículas, água, borra e verniz encurtam a vida do óleo e das máquinas. O purificador Triple R remove os quatro." crumbs={[{ label: 'Benefícios' }]}>
+        <div className="row-gap" style={{ marginTop: 28 }}>
+          <Link className="btn btn-clear" href={quoteHref()}>Pedir orçamento</Link>
+          <CatalogButton className="btn btn-ghost-light" />
+        </div>
+      </PageHero>
+      <section className="section section--soft">
+        <div className="container contaminants">
+          {CONTAMINANTS.map((c, i) => (
+            <Reveal key={c.name} delay={i * 90} className="cont">
+              <span className="cont__ic"><Icon name={c.icon} size={30} /></span>
+              <h2>{c.name}</h2>
+              <p className="cont__damage"><b>Dano:</b> {c.damage}</p>
+              <p className="cont__fix"><b>Como o Triple R remove:</b> {c.fix}</p>
+            </Reveal>
+          ))}
+        </div>
+      </section>
       <section className="section">
         <div className="container split">
-          <Reveal>
-            <span className="eyebrow">Eficiência</span>
-            <h2>Tenha um desempenho melhor</h2>
-            <p className="lead">A purificação de óleo otimiza o desempenho dos equipamentos e garante uma operação mais eficiente e confiável.</p>
+          <Reveal variant="left">
+            <span className="eyebrow">By-pass x filtro de linha</span>
+            <h2>Por que o by-pass limpa mais</h2>
+            <p className="lead">O purificador Triple R fica fora do fluxo principal: trabalha com vazão reduzida, baixa pressão e sem pulsação. Por isso o óleo atravessa 114 mm de meio filtrante, contra 1 a 2 mm de um filtro de linha comum.</p>
           </Reveal>
-          <Reveal delay={120}>
-            <div className="features" style={{ gridTemplateColumns: '1fr' }}>
-              {LIST.map((l, i) => (
-                <div className="feature" key={l} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 18 }}>
-                  <span className="num" style={{ margin: 0 }}>{i + 1}</span>
-                  <b style={{ fontFamily: 'var(--head)', color: 'var(--deep)' }}>{l}</b>
-                </div>
-              ))}
+          <Reveal variant="right" delay={120}>
+            <div className="media-frame" style={{ background: '#fff' }}>
+              <Image src={img('2023/07/ByPass-Versus-Line.webp')} alt="Comparação entre purificador by-pass Triple R e filtro de linha" fill sizes="(max-width: 900px) 100vw, 560px" />
             </div>
           </Reveal>
         </div>
       </section>
-      {TOPICS.map((t, i) => (
-        <section className={`section${i % 2 === 0 ? ' section--soft' : ''}`} key={t.title}>
-          <div className="container split">
-            <Reveal style={{ order: i % 2 ? 2 : 0 }}>
-              <div className="media-frame" style={{ background: '#fff' }}>
-                <Image src={img(t.image)} alt={t.title} fill sizes="(max-width: 900px) 100vw, 560px" />
-              </div>
-            </Reveal>
-            <Reveal delay={100}>
-              <span className="eyebrow">{t.eyebrow}</span>
-              <h2>{t.title}</h2>
-              <div className="prose">
-                {t.text.map(p => (
-                  <p key={p}>{p}</p>
-                ))}
-              </div>
-            </Reveal>
-          </div>
-        </section>
-      ))}
       <section className="section section--dark">
         <div className="hero-r" aria-hidden="true" />
-        <div className="container split" style={{ position: 'relative' }}>
-          <div>
-            <span className="eyebrow">Óleo perfeitamente limpo</span>
-            <h2>A Triple R não vende filtros. Vende óleo limpo.</h2>
-            <p style={{ color: 'rgba(255,255,255,0.75)' }}>Elementos absolutos testados Multipass (ISO 4572), com alta eficiência de retenção (β &gt; 75). Em qualquer aplicação, você compra uma solução para o problema de contaminação.</p>
+        <div className="container" style={{ position: 'relative' }}>
+          <div className="section-head">
+            <span className="eyebrow">Em números</span>
+            <h2>O custo de um óleo contaminado</h2>
           </div>
-          <div className="row-gap">
-            <a className="btn btn-light" href={wa('Olá! Gostaria de saber qual purificador Triple R é ideal para minha máquina.')} target="_blank" rel="noopener">Quero óleo limpo</a>
+          <div className="facts">
+            {FACTS.map(([n, t]) => (
+              <div key={n}>
+                <strong>{n}</strong>
+                <span>{t}</span>
+              </div>
+            ))}
           </div>
+          <p className="facts__src">Segundo dados do fabricante (Triple R).</p>
         </div>
       </section>
     </>

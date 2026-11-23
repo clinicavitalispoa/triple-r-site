@@ -1,24 +1,33 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import MachineHolo from '@/components/MachineHolo';
+import Icon from '@/components/Icon';
 import Machine3D from '@/components/Machine3D';
+import MachineHolo from '@/components/MachineHolo';
 import ProductCard from '@/components/ProductCard';
-import { MODELS_3D, getModel, getSeries, models, seriesModels, waCatalog, waQuote } from '@/lib/site';
+import { SERIES_META } from '@/lib/catalog';
+import { MODELS_3D, fichaPdf, getModel, getSeries, models, productHref, quoteHref, seriesModels } from '@/lib/site';
 
 export function generateStaticParams() {
-  return Object.keys(models).map(slug => ({ slug }));
+  return Object.entries(models).map(([modelo, m]) => ({ serie: m.series, modelo }));
 }
 
 export async function generateMetadata({ params }) {
-  const m = getModel((await params).slug);
-  return m ? { title: m.name, description: m.desc } : {};
+  const { modelo } = await params;
+  const m = getModel(modelo);
+  return m ? { title: `${m.name} | ${m.seriesTitle}`, description: m.desc, alternates: { canonical: productHref(modelo) } } : {};
 }
 
+const isVolume = v => /\d\s?L\b/.test(v);
+
 export default async function Produto({ params }) {
-  const m = getModel((await params).slug);
-  if (!m) notFound();
+  const { serie, modelo } = await params;
+  const m = getModel(modelo);
+  if (!m || m.series !== serie) notFound();
   const s = getSeries(m.series);
+  const meta = SERIES_META[s.slug];
   const related = seriesModels(s).filter(x => x.slug !== m.slug).slice(0, 4);
+  const volumes = m.sel.filter(([, v]) => isVolume(v));
+  const notes = m.sel.filter(([, v]) => !isVolume(v));
   return (
     <>
       <section className="section" style={{ paddingTop: 40 }}>
@@ -42,27 +51,21 @@ export default async function Produto({ params }) {
               )}
             </div>
             <div>
-              <span className="chip">{s.title}</span>
+              <Link className="chip" href={`/solucoes/${s.slug}`}>{s.title}</Link>
               <h1 className="product-title">{m.name}</h1>
               <p className="lead">{m.desc}</p>
+              <ul className="highlights">
+                {meta.highlights.map(([icon, text]) => (
+                  <li key={text}>
+                    <span className="highlights__ic"><Icon name={icon} /></span>
+                    {text}
+                  </li>
+                ))}
+              </ul>
               <div className="cta-box">
-                <a className="btn btn-wa" href={waQuote(m.name)} target="_blank" rel="noopener">Pedir orçamento no WhatsApp</a>
-                <a className="btn btn-ghost" href={waCatalog(m.name)} target="_blank" rel="noopener">Receber ficha técnica</a>
+                <Link className="btn btn-primary" href={quoteHref(m.name)}>Pedir orçamento</Link>
+                <a className="btn btn-ghost" href={fichaPdf(m.slug)} download>Baixar ficha técnica (PDF)</a>
               </div>
-              {m.sections.length ? (
-                <div className="tabs-list">
-                  {m.sections.map((sec, i) => (
-                    <details key={i} open={i === 0}>
-                      <summary>{sec.t}</summary>
-                      <ul>
-                        {sec.i.map((it, j) => (
-                          <li key={j}>{it}</li>
-                        ))}
-                      </ul>
-                    </details>
-                  ))}
-                </div>
-              ) : null}
               {m.specs.length ? (
                 <>
                   <h2 className="specs-title">Especificações técnicas</h2>
@@ -78,21 +81,48 @@ export default async function Produto({ params }) {
                   </table>
                 </>
               ) : null}
-              {m.sel.length ? (
+              {volumes.length ? (
                 <>
                   <h2 className="specs-title">Seleção por volume do sistema</h2>
                   <table className="specs">
+                    <thead>
+                      <tr>
+                        <th scope="col">Modelo</th>
+                        <th scope="col">Volume máximo do sistema</th>
+                      </tr>
+                    </thead>
                     <tbody>
-                      {m.sel.map(([k, v], i) => (
+                      {volumes.map(([k, v], i) => (
                         <tr key={i}>
                           <th scope="row">{k}</th>
-                          <td>{v}</td>
+                          <td>{v.replace(/\s*\|\s*/g, ' / ')}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <p className="note" style={{ marginTop: 10 }}>* Os critérios de seleção podem variar conforme o ambiente da máquina, o tipo de óleo e as condições de operação.</p>
+                  <p className="note" style={{ marginTop: 10 }}>Os critérios de seleção podem variar conforme o ambiente da máquina, o tipo de óleo e as condições de operação.</p>
                 </>
+              ) : null}
+              {notes.map(([k, v]) => (
+                <div className="spec-note" key={k}>
+                  <b>{k.charAt(0) + k.slice(1).toLowerCase()}</b>
+                  <p>{v}</p>
+                </div>
+              ))}
+              {m.sections.length ? (
+                <details className="more">
+                  <summary>Descrição técnica completa</summary>
+                  {m.sections.map((sec, i) => (
+                    <div key={i}>
+                      <h3>{sec.t}</h3>
+                      <ul>
+                        {sec.i.map((it, j) => (
+                          <li key={j}>{it}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </details>
               ) : null}
             </div>
           </div>
@@ -107,7 +137,7 @@ export default async function Produto({ params }) {
             </div>
             <div className="grid-cards">
               {related.map(r => (
-                <ProductCard key={r.slug} href={`/produto/${r.slug}`} image={r.limg || r.img} title={r.name} kicker={s.title} cta="Ver especificações" />
+                <ProductCard key={r.slug} href={productHref(r.slug, s.slug)} image={r.limg || r.img} title={r.name} kicker={s.title} cta="Ver especificações" />
               ))}
             </div>
           </div>
