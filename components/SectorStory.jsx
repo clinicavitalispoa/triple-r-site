@@ -28,6 +28,7 @@ export default function SectorStory({ story, images }) {
   const ty = zoomed ? (0.5 - clamp(cur.y, zoom)) * 100 * zoom : 0;
   const ratio = story.scenes[scene].ratio;
   const showAll = !cur || cur.overview || step >= n;
+  const pingAll = showAll;
 
   const block = (i, content, extra = '') => (
     <div key={i} className={`story__step ${extra}${step === i ? ' is-active' : ''}`} data-step={i} ref={el => (refs.current[i + 1] = el)}>
@@ -44,15 +45,13 @@ export default function SectorStory({ story, images }) {
               <div className="story__pan" style={si === scene ? { transform: `translate(${tx}%, ${ty}%) scale(${zoom})` } : undefined}>
                 <img src={images[si]} alt={sc.label} loading={si === 0 ? 'eager' : 'lazy'} />
                 {sc.points.map(([x, y], pi) => {
-                  const on = si === scene && (showAll ? step >= 0 : cur && cur.x === x && cur.y === y);
+                  const on = si === scene && (pingAll || (cur && cur.x === x && cur.y === y));
                   return <span key={pi} className={`story__ping${on ? ' is-on' : ''}`} style={{ left: `${x * 100}%`, top: `${y * 100}%` }} aria-hidden="true" />;
                 })}
               </div>
             </div>
           ))}
-          <div className="story__shutter story__shutter--l" aria-hidden="true" />
-          <div className="story__shutter story__shutter--r" aria-hidden="true" />
-          {step >= 0 ? (
+          {step >= -1 ? (
             <div className="story__badge" key={`${scene}-${step}`}>
               {zoomed ? <b>{cur.n}</b> : null}
               {zoomed ? cur.title : story.scenes[scene].label}
@@ -72,7 +71,7 @@ export default function SectorStory({ story, images }) {
             <span className="eyebrow">{story.intro.kicker}</span>
             <h2>{story.intro.title}</h2>
             <p className="lead">{story.intro.text}</p>
-            <span className="story__hint">Role para abrir ↓</span>
+            <span className="story__hint">Role para percorrer ↓</span>
           </>,
           'story__step--intro'
         )}

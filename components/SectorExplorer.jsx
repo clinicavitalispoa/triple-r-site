@@ -3,8 +3,10 @@
 import { useCallback, useState } from 'react';
 import SectorCarousel from './SectorCarousel';
 import SectorDetail from './SectorDetail';
+import SectorStory from './SectorStory';
 
-// Carousel picks a sector; the panel below shows that sector in the short format.
+// One page for all sectors: the carousel picks a sector and, right below, its scroll-telling
+// story (when there is an annotated picture) followed by the short summary and products.
 export default function SectorExplorer({ items, sectors }) {
   const [active, setActive] = useState(0);
   const onActiveChange = useCallback(i => setActive(i), []);
@@ -14,17 +16,20 @@ export default function SectorExplorer({ items, sectors }) {
       <section className="section section--dark" style={{ paddingBottom: 56 }}>
         <SectorCarousel items={items} onActiveChange={onActiveChange} selectOnly autoplay={0} />
       </section>
-      <section className="section section--soft sector-detail" aria-live="polite">
-        <div className="container" key={d.sector.slug}>
-          <div className="section-head">
-            <span className="eyebrow">
-              {String(active + 1).padStart(2, '0')} · {d.sector.nome}
-            </span>
-            <h2>{d.sector.chamada}</h2>
+      <div className="sector-detail" aria-live="polite" key={d.sector.slug}>
+        {d.story ? <SectorStory story={d.story} images={d.images} /> : null}
+        <section className="section section--soft">
+          <div className="container">
+            <div className="section-head">
+              <span className="eyebrow">
+                {String(active + 1).padStart(2, '0')} · {d.sector.nome}
+              </span>
+              <h2>{d.sector.chamada}</h2>
+            </div>
+            <SectorDetail sector={d.sector} products={d.products} />
           </div>
-          <SectorDetail sector={d.sector} products={d.products} showPageLink />
-        </div>
-      </section>
+        </section>
+      </div>
     </>
   );
 }

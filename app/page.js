@@ -3,6 +3,7 @@ import AnimatedWords from '@/components/AnimatedWords';
 import { CatalogButton } from '@/components/Catalog';
 import CountUp from '@/components/CountUp';
 import Faq from '@/components/Faq';
+import FiltrationCutaway from '@/components/FiltrationCutaway';
 import HeroVideo from '@/components/HeroVideo';
 import Machine3D from '@/components/Machine3D';
 import ProductCard from '@/components/ProductCard';
@@ -65,25 +66,7 @@ export default function Home() {
       <section className="section section--dark">
         <div className="hero-r" aria-hidden="true" />
         <div className="container" style={{ position: 'relative' }}>
-          <div className="split split--top">
-            <Reveal variant="left">
-              <span className="eyebrow">Quem somos · purificação 3 em 1</span>
-              <h2>
-                <AnimatedWords text="Muito mais que filtragem: purificação." onView />
-              </h2>
-              <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: '1.08rem' }}>
-                Há mais de 50 anos a tecnologia Triple R estende a vida do óleo e reduz paradas por contaminação. O óleo atravessa 114 mm de celulose especial, que retém partículas, água, borra e verniz no mesmo elemento.
-              </p>
-              <Link className="btn btn-ghost-light" href="/quem-somos" style={{ marginTop: 10 }}>Conheça a Triple R</Link>
-            </Reveal>
-            <Reveal variant="right" delay={120}>
-              <div className="rrr rrr--stack">
-                <div><b>&gt; 25 µm</b>Partículas grandes ficam no topo do elemento, que vira também ferramenta de diagnóstico.</div>
-                <div><b>&gt; 15 µm</b>Partículas menores são capturadas na parte superior do meio filtrante.</div>
-                <div><b>&gt; 1 µm</b>Micropartículas, água, borra e verniz ficam na parte inferior comprimida.</div>
-              </div>
-            </Reveal>
-          </div>
+          <FiltrationCutaway />
           <div className="stats" style={{ marginTop: 48 }}>
             <div><strong><CountUp to={50} prefix="+" /></strong><span>anos de tecnologia</span></div>
             <div><strong><CountUp to={50} prefix="+" /></strong><span>países atendidos</span></div>
